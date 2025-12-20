@@ -10,7 +10,7 @@ import {
 // --- Elementos de Identidad Visual ---
 
 const ElegantTricolor = ({ className = "" }) => (
-  <div className={`w-full h-1.5 flex shadow-sm overflow-hidden ${className}`}>
+  <div className={`w-full h-1.5 flex shadow-sm overflow-hidden sticky top-0 z-[100] ${className}`}>
     <div className="flex-1 bg-[#D52B1E]"></div>
     <div className="flex-1 bg-white"></div>
     <div className="flex-1 bg-[#0038A8]"></div>
@@ -46,7 +46,7 @@ const GoogleLogo = () => (
 const HelpModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
         <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           <h3 className="font-serif font-bold text-[#003366] text-xl uppercase tracking-tighter">Guía de documento</h3>
@@ -107,7 +107,7 @@ const UnifiedHeader = ({ user, onLogout }) => {
               </div>
             </button>
             {showUserMenu && (
-              <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 text-left">
+              <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 text-left animate-in fade-in slide-in-from-top-2">
                 <div className="p-4 bg-[#003366] text-white relative overflow-hidden">
                   <ParaguaySeal opacity="opacity-10" />
                   <p className="text-[9px] font-bold opacity-60 uppercase tracking-widest mb-1">Información ciudadana</p>
@@ -123,7 +123,7 @@ const UnifiedHeader = ({ user, onLogout }) => {
           <div className="hidden md:flex items-center gap-6">
              <div className="flex flex-col text-right font-sans">
                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Atención al ciudadano</p>
-               <p className="text-sm font-black text-[#003366]">+595 21 414 8000</p>
+               <p className="text-sm font-black text-[#003366] font-sans">+595 21 414 8000</p>
              </div>
              <HelpCircle size={24} className="text-[#003366] opacity-30 hover:opacity-100 cursor-help transition-opacity" />
           </div>
@@ -175,7 +175,7 @@ const CredentialRecoveryView = ({ onBack }) => {
                   <input type="text" placeholder="Ej: 1.234.567" className="w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" required />
                 </div>
               </div>
-              <button type="submit" disabled={isLoading} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all font-sans uppercase tracking-widest">
+              <button type="submit" disabled={isLoading} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all font-sans uppercase tracking-widest text-xs">
                 {isLoading ? <RefreshCw className="animate-spin" size={20} /> : <>VALIDAR Y ENVIAR <Send size={18} /></>}
               </button>
               <button type="button" onClick={onBack} className="text-xs font-bold text-gray-400 hover:text-[#003366] mt-4 flex items-center gap-1 uppercase tracking-wider font-sans transition-colors"><ArrowLeft size={14} /> VOLVER AL ACCESO</button>
@@ -220,7 +220,7 @@ const ForgotPasswordView = ({ onBack }) => {
                   <input type="email" placeholder="usuario@correo.com" className="w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" required />
                 </div>
               </div>
-              <button type="submit" disabled={isLoading} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 font-sans uppercase tracking-widest active:scale-95 transition-all">
+              <button type="submit" disabled={isLoading} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 font-sans uppercase tracking-widest active:scale-95 transition-all text-xs">
                 {isLoading ? <RefreshCw className="animate-spin" size={20} /> : <>RESTABLECER ACCESO <Send size={18} /></>}
               </button>
               <button type="button" onClick={onBack} className="text-xs font-bold text-gray-400 hover:text-[#003366] mt-4 flex items-center gap-1 uppercase tracking-wider font-sans transition-colors"><ArrowLeft size={14} /> VOLVER AL ACCESO</button>
