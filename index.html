@@ -1,1 +1,898 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { 
+  User, Lock, Mail, Eye, EyeOff, ArrowLeft, CheckCircle, 
+  HelpCircle, Hash, Smartphone, ChevronRight, 
+  ChevronDown, UserCircle, RefreshCw, X, MapPin, 
+  Languages, Shield, Facebook, Info, Search, 
+  PlusCircle, FileDown, Fingerprint, Send
+} from 'lucide-react';
 
+// --- Elementos de Identidad Visual ---
+
+const ElegantTricolor = ({ className = "" }) => (
+  <div className={`w-full h-1.5 flex shadow-sm overflow-hidden ${className}`}>
+    <div className="flex-1 bg-[#D52B1E]"></div>
+    <div className="flex-1 bg-white"></div>
+    <div className="flex-1 bg-[#0038A8]"></div>
+  </div>
+);
+
+const ParaguaySeal = ({ opacity = "opacity-[0.03]" }) => (
+  <svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${opacity} absolute -right-8 -bottom-8 rotate-12 pointer-events-none`}>
+    <circle cx="50" cy="50" r="48" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" />
+    <path d="M50 20V80M20 50H80" stroke="currentColor" strokeWidth="0.5" />
+  </svg>
+);
+
+const ParaguayFlagIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="rounded-sm shadow-sm border border-gray-100">
+    <rect x="0" y="0" width="32" height="10" fill="#D52B1E" />
+    <rect x="0" y="10" width="32" height="12" fill="#FFFFFF" />
+    <rect x="0" y="22" width="32" height="10" fill="#0038A8" />
+  </svg>
+);
+
+const GoogleLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  </svg>
+);
+
+// --- Componentes de Apoyo ---
+
+const HelpModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+          <h3 className="font-serif font-bold text-[#003366] text-xl uppercase tracking-tighter">Guía de documento</h3>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 transition-colors"><X size={24} /></button>
+        </div>
+        <div className="p-8 space-y-6">
+          <div className="relative rounded-2xl border-4 border-[#D52B1E] bg-slate-100 aspect-video overflow-hidden shadow-inner flex flex-col items-center justify-center">
+            <ParaguaySeal opacity="opacity-10" />
+            <div className="absolute top-4 right-4 border-2 border-red-600 bg-red-600/10 w-24 h-10 animate-pulse flex items-center justify-center">
+               <span className="text-[10px] font-black text-red-600 bg-white px-1">DATO AQUÍ</span>
+            </div>
+            <p className="text-[11px] font-bold text-gray-400 uppercase">Ejemplo de documento</p>
+          </div>
+          <p className="text-xs text-gray-500 leading-relaxed text-center italic">
+            El número de documento se encuentra resaltado en la esquina superior derecha del ejemplar físico.
+          </p>
+          <button onClick={onClose} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-[#002244] active:scale-95 transition-all font-sans uppercase tracking-widest text-xs">ENTENDIDO</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Componente de Encabezado ---
+
+const UnifiedHeader = ({ user, onLogout }) => {
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) setShowUserMenu(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuRef]);
+
+  return (
+    <header className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm text-left">
+      <ElegantTricolor />
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-[#003366] rounded-xl flex items-center justify-center text-white font-serif font-bold text-lg shadow-xl border border-white/10 rotate-2">MRE</div>
+          <div className="flex flex-col text-left">
+            <h1 className="text-[#003366] font-bold text-base md:text-lg tracking-tight leading-tight font-serif uppercase">Ministerio de Relaciones Exteriores</h1>
+            <p className="text-[10px] text-[#D52B1E] font-bold tracking-[0.4em] uppercase opacity-90">República del Paraguay</p>
+          </div>
+        </div>
+        {user ? (
+          <div className="relative" ref={menuRef}>
+            <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-3 p-1.5 pl-3 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-white transition-all group">
+              <div className="hidden md:block text-right pr-2">
+                <p className="text-[9px] font-bold text-gray-400 leading-none mb-1 uppercase tracking-tighter">Sesión activa</p>
+                <p className="text-xs font-bold text-[#003366]">{user.name}</p>
+              </div>
+              <div className="w-9 h-9 rounded-xl bg-[#003366] text-white flex items-center justify-center shadow-md">
+                <UserCircle size={22} />
+              </div>
+            </button>
+            {showUserMenu && (
+              <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 text-left">
+                <div className="p-4 bg-[#003366] text-white relative overflow-hidden">
+                  <ParaguaySeal opacity="opacity-10" />
+                  <p className="text-[9px] font-bold opacity-60 uppercase tracking-widest mb-1">Información ciudadana</p>
+                  <p className="font-bold text-sm">{user.name}</p>
+                </div>
+                <div className="p-2">
+                  <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 rounded-xl transition-colors text-left font-sans uppercase tracking-widest">CERRAR SESIÓN</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="hidden md:flex items-center gap-6">
+             <div className="flex flex-col text-right font-sans">
+               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Atención al ciudadano</p>
+               <p className="text-sm font-black text-[#003366]">+595 21 414 8000</p>
+             </div>
+             <HelpCircle size={24} className="text-[#003366] opacity-30 hover:opacity-100 cursor-help transition-opacity" />
+          </div>
+        )}
+      </div>
+    </header>
+  );
+};
+
+// --- Pantallas de Recuperación ---
+
+const CredentialRecoveryView = ({ onBack }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+
+  const handleRecovery = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => { setIsLoading(false); setIsSent(true); }, 1500);
+  };
+
+  return (
+    <div className="w-full max-w-lg mx-auto py-12 px-4 animate-in fade-in zoom-in-95 duration-500 text-left">
+      <div className="text-center mb-10 space-y-3">
+        <h2 className="text-3xl font-bold text-[#003366] tracking-tight font-serif">Recuperar usuario</h2>
+        <p className="text-gray-500 text-sm font-medium">Complete los datos para validar su identidad.</p>
+      </div>
+      <div className="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden relative p-8 md:p-14 text-left">
+          <ParaguaySeal opacity="opacity-[0.06]" />
+          {!isSent ? (
+            <form onSubmit={handleRecovery} className="space-y-6 relative z-10 flex flex-col items-center">
+              <div className="w-full space-y-2 text-left">
+                <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Tipo de documento *</label>
+                <div className="relative group">
+                  <Fingerprint className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                  <select className="w-full h-12 pl-11 pr-10 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none appearance-none cursor-pointer" required>
+                    <option value="">Seleccione tipo</option>
+                    <option value="CI">Cédula de Identidad</option>
+                    <option value="PAS">Pasaporte</option>
+                    <option value="DNI">DNI extranjero</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                </div>
+              </div>
+              <div className="w-full space-y-2 text-left">
+                <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Número de documento *</label>
+                <div className="relative">
+                  <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                  <input type="text" placeholder="Ej: 1.234.567" className="w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" required />
+                </div>
+              </div>
+              <button type="submit" disabled={isLoading} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all font-sans uppercase tracking-widest">
+                {isLoading ? <RefreshCw className="animate-spin" size={20} /> : <>VALIDAR Y ENVIAR <Send size={18} /></>}
+              </button>
+              <button type="button" onClick={onBack} className="text-xs font-bold text-gray-400 hover:text-[#003366] mt-4 flex items-center gap-1 uppercase tracking-wider font-sans transition-colors"><ArrowLeft size={14} /> VOLVER AL ACCESO</button>
+            </form>
+          ) : (
+            <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+               <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-inner"><CheckCircle size={40} /></div>
+               <h4 className="text-xl font-bold text-[#003366]">Instrucciones enviadas</h4>
+               <p className="text-gray-500 text-sm">Si los datos coinciden, hemos enviado su nombre de usuario al correo vinculado a su documento.</p>
+               <button onClick={onBack} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl font-sans uppercase tracking-widest active:scale-95 transition-all">ENTENDIDO</button>
+            </div>
+          )}
+      </div>
+    </div>
+  );
+};
+
+const ForgotPasswordView = ({ onBack }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+
+  const handleForgotPass = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => { setIsLoading(false); setIsSent(true); }, 1500);
+  };
+
+  return (
+    <div className="w-full max-w-lg mx-auto py-12 px-4 animate-in fade-in zoom-in-95 duration-500 text-left">
+      <div className="text-center mb-10 space-y-3">
+        <h2 className="text-3xl font-bold text-[#003366] tracking-tight font-serif">Recuperar contraseña</h2>
+        <p className="text-gray-500 text-sm font-medium">Ingrese su correo para recibir un enlace de recuperación.</p>
+      </div>
+      <div className="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden relative p-8 md:p-14 text-left">
+          <ParaguaySeal opacity="opacity-[0.06]" />
+          {!isSent ? (
+            <form onSubmit={handleForgotPass} className="space-y-6 relative z-10 flex flex-col items-center">
+              <div className="w-full space-y-2 text-left">
+                <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Correo electrónico *</label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                  <input type="email" placeholder="usuario@correo.com" className="w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" required />
+                </div>
+              </div>
+              <button type="submit" disabled={isLoading} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 font-sans uppercase tracking-widest active:scale-95 transition-all">
+                {isLoading ? <RefreshCw className="animate-spin" size={20} /> : <>RESTABLECER ACCESO <Send size={18} /></>}
+              </button>
+              <button type="button" onClick={onBack} className="text-xs font-bold text-gray-400 hover:text-[#003366] mt-4 flex items-center gap-1 uppercase tracking-wider font-sans transition-colors"><ArrowLeft size={14} /> VOLVER AL ACCESO</button>
+            </form>
+          ) : (
+            <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+               <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-inner"><CheckCircle size={40} /></div>
+               <h4 className="text-xl font-bold text-[#003366]">Correo enviado</h4>
+               <p className="text-gray-500 text-sm">Hemos enviado un enlace seguro a su casilla de correo para que pueda generar una nueva contraseña.</p>
+               <button onClick={onBack} className="w-full bg-[#003366] text-white font-bold py-4 rounded-2xl font-sans uppercase tracking-widest active:scale-95 transition-all">VOLVER AL INICIO</button>
+            </div>
+          )}
+      </div>
+    </div>
+  );
+};
+
+// --- Pantalla: Registro / Crear Cuenta ---
+
+const RegistrationView = ({ prefilledData = null, onBack, onRegisterSuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  
+  // Determinamos si es un flujo de datos adicionales (SSO)
+  const isAdditionalDataFlow = !!prefilledData;
+
+  const [formData, setFormData] = useState({
+    tipoDoc: prefilledData?.tipoDoc || "CI",
+    nroDoc: prefilledData?.nroDoc || "",
+    nombre: prefilledData?.nombre || "",
+    apellido: prefilledData?.apellido || "",
+    nacionalidad: prefilledData?.nacionalidad || "Paraguaya",
+    celular: "",
+    direccion: "",
+    correo: prefilledData?.email || "",
+    pass: "",
+    confirmPass: ""
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => { setIsLoading(false); onRegisterSuccess(); }, 1200);
+  };
+
+  const isPassportOrDni = formData.tipoDoc === 'PAS' || formData.tipoDoc === 'DNI';
+
+  return (
+    <div className="w-full max-w-2xl mx-auto py-12 px-4 animate-in fade-in slide-in-from-bottom-8 duration-700 text-left">
+      <HelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
+      
+      <div className="text-center mb-8 space-y-2">
+        <h2 className="text-2xl md:text-3xl font-bold text-[#003366] font-serif tracking-tight px-4 leading-tight text-left">
+          {isAdditionalDataFlow ? "Datos adicionales" : "Crear Cuenta"}
+        </h2>
+        <p className="text-gray-400 text-sm font-medium tracking-tight px-4 text-left uppercase">Portal Único de Registro Ciudadano</p>
+      </div>
+
+      <div className="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden relative">
+        <div className="p-8 md:p-12">
+          <ParaguaySeal opacity="opacity-[0.05]" />
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 relative z-10 text-left">
+            
+            <div className="flex flex-col space-y-2">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Tipo de documento *</label>
+              <div className="relative">
+                <Fingerprint className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <select 
+                  className={`w-full h-12 pl-11 pr-10 bg-gray-50 border border-gray-200 rounded-2xl text-sm appearance-none focus:outline-none focus:border-[#003366] transition-all ${isAdditionalDataFlow && formData.tipoDoc !== "" ? 'opacity-70 cursor-not-allowed bg-gray-100' : 'cursor-pointer'}`} 
+                  value={formData.tipoDoc} 
+                  onChange={(e) => !isAdditionalDataFlow && setFormData({...formData, tipoDoc: e.target.value})} 
+                  disabled={isAdditionalDataFlow && formData.tipoDoc !== ""}
+                  required
+                >
+                  <option value="CI">Cédula de Identidad</option>
+                  <option value="PAS">Pasaporte</option>
+                  <option value="DNI">DNI extranjero</option>
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Número de documento *</label>
+              <div className="relative group">
+                <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Ej: 1.234.567"
+                  className={`w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm ${isAdditionalDataFlow && formData.nroDoc !== "" ? 'opacity-70 cursor-not-allowed bg-gray-100' : ''}`} 
+                  value={formData.nroDoc} 
+                  onChange={(e) => !isAdditionalDataFlow && setFormData({...formData, nroDoc: e.target.value})} 
+                  readOnly={isAdditionalDataFlow && formData.nroDoc !== ""}
+                  required 
+                />
+                {isPassportOrDni && (
+                  <button 
+                    type="button" 
+                    onClick={() => setShowHelpModal(true)}
+                    className="absolute right-3 top-[-22px] text-[10px] font-bold text-[#003366] hover:text-[#D52B1E] transition-all flex items-center gap-1 uppercase"
+                  >
+                    <HelpCircle size={12} /> Ayuda
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Nombre(s) *</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Sus nombres"
+                  className={`w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm ${isAdditionalDataFlow && formData.nombre !== "" ? 'opacity-70 cursor-not-allowed bg-gray-100' : ''}`} 
+                  value={formData.nombre} 
+                  onChange={(e) => !isAdditionalDataFlow && setFormData({...formData, nombre: e.target.value})} 
+                  readOnly={isAdditionalDataFlow && formData.nombre !== ""}
+                  required 
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Apellido(s) *</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Sus apellidos"
+                  className={`w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm ${isAdditionalDataFlow && formData.apellido !== "" ? 'opacity-70 cursor-not-allowed bg-gray-100' : ''}`} 
+                  value={formData.apellido} 
+                  onChange={(e) => !isAdditionalDataFlow && setFormData({...formData, apellido: e.target.value})} 
+                  readOnly={isAdditionalDataFlow && formData.apellido !== ""}
+                  required 
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Nacionalidad *</label>
+              <div className="relative">
+                <Languages className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <select 
+                  className="w-full h-12 pl-11 pr-10 bg-gray-50 border border-gray-200 rounded-2xl text-sm appearance-none cursor-pointer focus:outline-none focus:border-[#003366] transition-all" 
+                  value={formData.nacionalidad} 
+                  onChange={(e) => setFormData({...formData, nacionalidad: e.target.value})} 
+                  required
+                >
+                  <option value="Paraguaya">Paraguaya</option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Brasilera">Brasilera</option>
+                  <option value="Uruguaya">Uruguaya</option>
+                  <option value="Boliviana">Boliviana</option>
+                  <option value="Chilena">Chilena</option>
+                  <option value="Otra">Otra</option>
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Celular *</label>
+              <div className="relative">
+                <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input 
+                  type="tel" 
+                  placeholder="09xx xxx xxx"
+                  className="w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" 
+                  value={formData.celular} 
+                  onChange={(e) => setFormData({...formData, celular: e.target.value})} 
+                  required 
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-2 flex flex-col space-y-2">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Dirección particular *</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Calle, Nro., Ciudad, Departamento"
+                  className="w-full h-12 pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" 
+                  value={formData.direccion} 
+                  onChange={(e) => setFormData({...formData, direccion: e.target.value})} 
+                  required 
+                />
+              </div>
+            </div>
+            
+            {/* Solo mostramos correo y contraseña si NO es un flujo de datos adicionales (SSO) */}
+            {!isAdditionalDataFlow && (
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 border-t border-gray-100 pt-6 mt-2">
+                  <div className="md:col-span-2 flex flex-col space-y-2">
+                    <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Correo electrónico *</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input 
+                        type="email" 
+                        placeholder="usuario@correo.com"
+                        className="w-full h-12 pl-11 pr-4 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" 
+                        value={formData.correo} 
+                        onChange={(e) => setFormData({...formData, correo: e.target.value})} 
+                        required 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col space-y-2">
+                    <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Contraseña *</label>
+                    <div className="relative group">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input 
+                        type={showPass ? "text" : "password"} 
+                        placeholder="8+ caracteres" 
+                        className="w-full h-12 pl-11 pr-12 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" 
+                        value={formData.pass}
+                        onChange={(e) => setFormData({...formData, pass: e.target.value})}
+                        required 
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => setShowPass(!showPass)} 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#003366] transition-colors"
+                      >
+                        {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col space-y-2">
+                    <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Confirmar contraseña *</label>
+                    <div className="relative group">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input 
+                        type={showConfirmPass ? "text" : "password"} 
+                        placeholder="Repita su contraseña" 
+                        className="w-full h-12 pl-11 pr-12 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" 
+                        value={formData.confirmPass}
+                        onChange={(e) => setFormData({...formData, confirmPass: e.target.value})}
+                        required 
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => setShowConfirmPass(!showConfirmPass)} 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#003366] transition-colors"
+                      >
+                        {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+              </div>
+            )}
+
+            <div className="md:col-span-2 mt-8 flex flex-col items-center gap-6">
+              {/* Solo mostramos la leyenda si NO es un flujo de datos adicionales */}
+              {!isAdditionalDataFlow && (
+                <div className="bg-slate-50 p-4 rounded-xl border border-gray-100 w-full text-center">
+                   <p className="text-[10px] text-[#003366] font-bold uppercase tracking-widest leading-relaxed">
+                     Requerimiento de contraseña: Mínimo 8 caracteres, una mayúscula, una minúscula y un número.
+                   </p>
+                </div>
+              )}
+
+              <button 
+                type="submit" 
+                disabled={isLoading} 
+                className="w-full md:max-w-[320px] bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-[#002244] active:scale-95 transition-all font-sans uppercase tracking-widest text-xs flex items-center justify-center gap-3"
+              >
+                {isLoading ? <RefreshCw className="animate-spin" size={20} /> : (isAdditionalDataFlow ? 'COMPLETAR PERFIL' : 'REGISTRARME')}
+              </button>
+              <button 
+                type="button" 
+                onClick={onBack} 
+                className="text-xs font-bold text-gray-400 hover:text-red-500 transition-colors uppercase tracking-widest font-sans"
+              >
+                {isAdditionalDataFlow ? 'CANCELAR Y VOLVER' : 'CANCELAR Y VOLVER AL INICIO'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Pantalla: Inicio de Sesión ---
+
+const LoginView = ({ onLogin, onForgotUser, onForgotPass, onStartIdentityLogin, onStartRegistration, onExternalSocialLogin }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => { onLogin(); setIsLoading(false); }, 800);
+  };
+
+  return (
+    <div className="w-full max-w-lg mx-auto py-12 px-4 animate-in fade-in slide-in-from-bottom-8 duration-700 text-left">
+      <div className="text-center mb-10 space-y-3">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#003366]/5 border border-[#003366]/10 text-[#003366] text-[11px] font-bold shadow-sm uppercase tracking-tighter">
+           <Shield size={12} className="text-[#D52B1E]" /> Portal Oficial de Trámites Consulares
+        </div>
+        <h2 className="text-4xl font-bold text-[#003366] tracking-tight font-serif">Bienvenido</h2>
+        <p className="text-gray-500 text-sm">Gestione sus documentos oficiales con seguridad y rapidez.</p>
+      </div>
+
+      <div className="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden relative text-left">
+        <div className="p-8 md:p-14">
+          <ParaguaySeal opacity="opacity-[0.06]" />
+          <form onSubmit={handleSubmit} className="space-y-6 relative z-10 flex flex-col items-center">
+            <div className="w-full space-y-2 text-left">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Correo electrónico o CI</label>
+              <div className="relative group">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#003366]" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Ej: 1.234.567"
+                  className="w-full h-12 pl-11 pr-4 bg-gray-50/50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" 
+                  required 
+                />
+              </div>
+              <div className="flex justify-end pr-1">
+                <button type="button" onClick={onForgotUser} className="text-[10px] font-bold text-[#003366] hover:text-[#D52B1E] transition-colors underline-offset-2 hover:underline">¿Olvidó su nombre de usuario?</button>
+              </div>
+            </div>
+            
+            <div className="w-full space-y-2 text-left">
+              <label className="text-xs font-bold text-gray-500 ml-1 uppercase">Contraseña</label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#003366]" size={18} />
+                <input 
+                  type={showPass ? "text" : "password"} 
+                  placeholder="Ingrese su clave" 
+                  className="w-full h-12 pl-11 pr-12 bg-gray-50/50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#003366] transition-all shadow-sm" 
+                  required 
+                />
+                <button 
+                  type="button" 
+                  onClick={() => setShowPass(!showPass)} 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#003366] transition-colors"
+                >
+                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              <div className="flex justify-end pr-1">
+                <button type="button" onClick={onForgotPass} className="text-[10px] font-bold text-[#003366] hover:text-[#D52B1E] transition-colors underline-offset-2 hover:underline">¿Olvidó su contraseña?</button>
+              </div>
+            </div>
+
+            <div className="w-full pt-2">
+              <button type="submit" disabled={isLoading} className="w-full md:max-w-[280px] mx-auto bg-[#003366] text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-[#002244] transition-all flex items-center justify-center gap-3 active:scale-95 font-sans uppercase tracking-widest text-xs">
+                {isLoading ? <RefreshCw className="animate-spin" size={20} /> : <>ACCEDER AL SISTEMA <ChevronRight size={18} /></>}
+              </button>
+            </div>
+          </form>
+
+          <div className="relative my-8 flex items-center gap-4">
+            <div className="flex-1 h-px bg-gray-100"></div>
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white px-2">OTRAS OPCIONES</span>
+            <div className="flex-1 h-px bg-gray-100"></div>
+          </div>
+
+          <div className="space-y-4 relative z-10 text-center">
+            <button onClick={onStartIdentityLogin} className="w-full bg-white border border-gray-200 text-[#003366] font-bold py-4 rounded-2xl hover:bg-gray-50 hover:border-blue-100 transition-all flex items-center justify-center gap-4 shadow-sm group">
+              <ParaguayFlagIcon />
+              <span className="text-sm font-sans uppercase tracking-wider">Identidad Electrónica</span>
+            </button>
+            <div className="grid grid-cols-2 gap-3">
+               <button onClick={() => onExternalSocialLogin('Google')} className="flex items-center justify-center gap-2.5 bg-white border border-gray-200 py-3 rounded-2xl hover:bg-gray-50 font-bold text-gray-600 text-xs shadow-sm active:scale-95 transition-all font-sans uppercase tracking-wider"><GoogleLogo /> GOOGLE</button>
+               <button onClick={() => onExternalSocialLogin('Facebook')} className="flex items-center justify-center gap-2.5 bg-[#1877F2] text-white py-3 rounded-2xl hover:opacity-90 font-bold text-xs shadow-sm active:scale-95 transition-all font-sans uppercase tracking-wider"><Facebook size={16} fill="currentColor" /> FACEBOOK</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-50/80 border-t border-gray-100 p-6 text-center">
+           <p className="text-xs text-gray-500 font-medium tracking-tight uppercase">¿Aún no tiene una cuenta?{' '}
+             <button onClick={onStartRegistration} className="text-[#003366] font-bold hover:text-[#D52B1E] transition-colors underline-offset-4 hover:underline">Registrarse</button>
+           </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Pantalla: Simulación Identidad Electrónica ---
+
+const IdentityLoginView = ({ onBack, onIdentitySuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  
+  const handleIdentityLogin = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      onIdentitySuccess({ 
+        tipoDoc: "CI", 
+        nroDoc: "1.234.567", 
+        nombre: "Juan Alberto", 
+        apellido: "Pérez", 
+        email: "juan.perez@identidad.gov.py",
+        isExisting: false 
+      });
+    }, 1200);
+  };
+
+  return (
+    <div className="w-full max-w-lg mx-auto py-12 px-4 animate-in fade-in slide-in-from-right-8 duration-500 text-left">
+      <div className="bg-[#0038A8] rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-[#0038A8]/20 text-white p-8 md:p-14 text-center">
+          <div className="mb-8 flex justify-center"><ParaguayFlagIcon /></div>
+          <h2 className="text-white text-2xl font-bold mb-4">Identidad Electrónica</h2>
+          <p className="text-blue-100 text-sm mb-8">Validación estatal de identidad ciudadana.</p>
+          <form onSubmit={handleIdentityLogin} className="space-y-6 text-left">
+            <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase opacity-60 ml-1 tracking-wider">CI / Usuario</label>
+                <input type="text" value="1.234.567" readOnly className="w-full h-12 px-6 bg-white/10 border border-white/20 rounded-2xl text-white text-sm outline-none" />
+            </div>
+            <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase opacity-60 ml-1 tracking-wider">Contraseña</label>
+                <div className="relative group">
+                  <input 
+                    type={showPass ? "text" : "password"} 
+                    value="password123"
+                    readOnly
+                    className="w-full h-12 pl-6 pr-12 bg-white/10 border border-white/20 rounded-2xl text-white text-sm outline-none" 
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPass(!showPass)} 
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                  >
+                    {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+            </div>
+            <button type="submit" disabled={isLoading} className="w-full bg-white text-[#0038A8] font-bold py-4 rounded-2xl shadow-lg hover:bg-gray-100 transition-all flex items-center justify-center gap-2 active:scale-95 font-sans uppercase tracking-widest text-xs">
+              {isLoading ? <RefreshCw className="animate-spin" size={20} /> : <>CONTINUAR</>}
+            </button>
+          </form>
+          <button onClick={onBack} className="mt-8 text-white/60 hover:text-white text-xs flex items-center justify-center gap-2 mx-auto transition-colors font-sans uppercase tracking-tighter">
+            <ArrowLeft size={14} /> Volver
+          </button>
+      </div>
+    </div>
+  );
+};
+
+// --- Pantalla: Simulación Social Login ---
+
+const SocialLoginView = ({ provider, onBack, onSuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const isGoogle = provider === 'Google';
+  
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      const fakeUser = isGoogle 
+        ? { nombre: "Carlos", apellido: "Gómez", nroDoc: "", email: "carlos.gomez@gmail.com", isExisting: false } 
+        : { nombre: "María", apellido: "Rodríguez", nroDoc: "", email: "maria.r@fb.com", isExisting: true };
+      onSuccess(fakeUser);
+    }, 1500);
+  };
+
+  return (
+    <div className="w-full max-w-lg mx-auto py-12 px-4 animate-in fade-in zoom-in-95 duration-500 text-left">
+      <div className={`rounded-[2.5rem] shadow-2xl overflow-hidden border ${isGoogle ? 'bg-white border-gray-100' : 'bg-[#1877F2] border-[#1877F2]/20 text-white'}`}>
+        <div className="p-8 md:p-14 text-center">
+          <div className="mb-8 flex justify-center">
+            {isGoogle ? <GoogleLogo /> : <Facebook size={48} fill="currentColor" />}
+          </div>
+          <h2 className={`text-2xl font-bold mb-4 ${isGoogle ? 'text-gray-900' : 'text-white'}`}>Sesión con {provider}</h2>
+          <form onSubmit={handleLogin} className="space-y-4 text-left">
+             <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase opacity-60 ml-1 tracking-wider">Correo</label>
+                <input type="text" placeholder="Ej: usuario@cuenta.com" className={`w-full h-12 px-5 rounded-2xl text-sm focus:outline-none transition-all ${isGoogle ? 'bg-gray-50 border border-gray-200' : 'bg-white/10 border border-white/20 text-white placeholder:text-white/40'}`} />
+             </div>
+             <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase opacity-60 ml-1 tracking-wider">Contraseña</label>
+                <div className="relative group">
+                  <input 
+                    type={showPass ? "text" : "password"} 
+                    placeholder="Contraseña"
+                    className={`w-full h-12 pl-5 pr-12 rounded-2xl text-sm focus:outline-none transition-all ${isGoogle ? 'bg-gray-50 border border-gray-200' : 'bg-white/10 border border-white/20 text-white placeholder:text-white/40'}`} 
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPass(!showPass)} 
+                    className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${isGoogle ? 'text-gray-400 hover:text-[#003366]' : 'text-white/40 hover:text-white'}`}
+                  >
+                    {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+             </div>
+             <button type="submit" disabled={isLoading} className={`w-full py-4 rounded-2xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 font-sans uppercase tracking-widest text-xs ${isGoogle ? 'bg-[#4285F4] text-white hover:bg-blue-600' : 'bg-white text-[#1877F2] hover:bg-gray-50'}`}>
+                {isLoading ? <RefreshCw className="animate-spin" size={20} /> : `ACCEDER CON ${provider.toUpperCase()}`}
+             </button>
+          </form>
+          <button onClick={onBack} className={`mt-8 text-xs flex items-center justify-center gap-2 mx-auto font-bold font-sans uppercase tracking-tighter transition-colors ${isGoogle ? 'text-gray-400 hover:text-[#003366]' : 'text-white/60 hover:text-white'}`}>
+            <ArrowLeft size={14} /> CANCELAR
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Panel de Gestión ---
+
+const CitizenDashboard = ({ user, onLogout }) => {
+  const [activeTab, setActiveTab] = useState('analisis');
+  const items = [
+    { id: '2025-00156', tipo: 'Título universitario', fecha: '18/03/2025', bandeja: 'analisis' },
+    { id: '2025-00210', tipo: 'Antecedentes penales', fecha: '21/03/2025', bandeja: 'aprobadas' },
+    { id: '2025-00222', tipo: 'Acta de nacimiento', fecha: '22/03/2025', bandeja: 'aprobadas' },
+  ];
+
+  const filtered = items.filter(i => i.bandeja === activeTab || activeTab === 'todos');
+
+  return (
+    <div className="max-w-7xl mx-auto w-full px-6 py-8 space-y-8 animate-in fade-in duration-700 text-left">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="space-y-1 text-left">
+            <h2 className="text-2xl font-bold text-[#003366] font-serif tracking-tight">Panel de Gestión</h2>
+            <p className="text-gray-400 text-xs font-medium uppercase tracking-widest italic tracking-[0.2em]">SIA-PY • CIUDADANO</p>
+          </div>
+          <button className="bg-[#D52B1E] hover:bg-red-700 text-white px-8 py-3 rounded-xl font-bold text-xs shadow-xl flex items-center gap-2 active:scale-95 transition-all font-sans uppercase tracking-widest">
+            <PlusCircle size={18} /> INICIAR SOLICITUD
+          </button>
+        </div>
+
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden">
+          <div className="p-4 bg-gray-50 border-b border-gray-100 flex gap-4 overflow-x-auto">
+             {['analisis', 'aprobadas', 'todos'].map(t => (
+               <button key={t} onClick={() => setActiveTab(t)} className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase transition-all tracking-wider ${activeTab === t ? 'bg-[#003366] text-white shadow-lg' : 'text-gray-400 hover:bg-white'}`}>
+                 {t === 'analisis' ? 'En análisis' : t === 'aprobadas' ? 'Aprobadas' : 'Todos'}
+               </button>
+             ))}
+          </div>
+          <div className="overflow-x-auto text-left">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-slate-100 text-[10px] font-black text-[#003366] uppercase tracking-widest">
+                <tr>
+                  <th className="px-8 py-5">Nro. solicitud</th>
+                  <th className="px-8 py-5">Tipo documento</th>
+                  <th className="px-8 py-5">Fecha registro</th>
+                  <th className="px-8 py-5 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filtered.map(item => (
+                  <tr key={item.id} className="hover:bg-blue-50/20 transition-colors">
+                    <td className="px-8 py-5 font-black text-[#003366] text-xs uppercase">{item.id}</td>
+                    <td className="px-8 py-5 font-semibold text-gray-700 text-xs">{item.tipo}</td>
+                    <td className="px-8 py-5 text-gray-400 italic text-xs">{item.fecha}</td>
+                    <td className="px-8 py-5 text-center">
+                      <button className="text-[#D52B1E] font-bold text-[10px] uppercase bg-white px-4 py-2 rounded-xl border border-red-100 hover:bg-red-50 shadow-sm inline-flex items-center gap-2 transition-all">
+                        <FileDown size={14} /> DESCARGAR
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+  );
+};
+
+// --- Componente Raíz ---
+
+export default function App() {
+  const [currentView, setCurrentView] = useState('login'); 
+  const [user, setUser] = useState(null);
+  const [identityData, setIdentityData] = useState(null);
+  const [activeSocialProvider, setActiveSocialProvider] = useState(null);
+
+  const handleLogin = (name = "Juan Alberto Pérez") => { 
+    setUser({ name }); 
+    setCurrentView('dashboard'); 
+  };
+  
+  const handleLogout = () => { 
+    setUser(null); 
+    setIdentityData(null); 
+    setActiveSocialProvider(null);
+    setCurrentView('login'); 
+  };
+  
+  const handleExternalSuccess = (data) => {
+    if (data.isExisting) {
+      handleLogin(`${data.nombre} ${data.apellido}`);
+    } else {
+      setIdentityData(data); 
+      setCurrentView('registration_traditional');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 flex flex-col selection:bg-[#003366] selection:text-white">
+      <UnifiedHeader user={user} onLogout={handleLogout} />
+      <main className="flex-1 flex flex-col relative overflow-hidden text-center">
+        <div className="absolute top-0 left-0 w-full h-[400px] bg-gradient-to-b from-blue-50/50 to-transparent -z-10"></div>
+        
+        {currentView === 'login' && (
+          <div className="flex-1 flex items-center justify-center">
+            <LoginView 
+              onLogin={() => handleLogin()} 
+              onForgotUser={() => setCurrentView('recovery_user')} 
+              onForgotPass={() => setCurrentView('recovery_pass')}
+              onStartIdentityLogin={() => setCurrentView('identity_external')}
+              onStartRegistration={() => { setIdentityData(null); setCurrentView('registration_traditional'); }}
+              onExternalSocialLogin={(p) => { setActiveSocialProvider(p); setCurrentView('social_external'); }}
+            />
+          </div>
+        )}
+
+        {currentView === 'recovery_user' && (
+          <div className="flex-1 flex items-center justify-center">
+            <CredentialRecoveryView onBack={() => setCurrentView('login')} />
+          </div>
+        )}
+
+        {currentView === 'recovery_pass' && (
+          <div className="flex-1 flex items-center justify-center">
+            <ForgotPasswordView onBack={() => setCurrentView('login')} />
+          </div>
+        )}
+
+        {currentView === 'identity_external' && (
+          <div className="flex-1 flex items-center justify-center">
+            <IdentityLoginView onBack={() => setCurrentView('login')} onIdentitySuccess={handleExternalSuccess} />
+          </div>
+        )}
+
+        {currentView === 'social_external' && (
+          <div className="flex-1 flex items-center justify-center">
+            <SocialLoginView 
+              provider={activeSocialProvider} 
+              onBack={() => setCurrentView('login')} 
+              onSuccess={handleExternalSuccess} 
+            />
+          </div>
+        )}
+
+        {currentView === 'registration_traditional' && (
+          <div className="flex-1 flex items-center justify-center">
+            <RegistrationView 
+              prefilledData={identityData} 
+              onBack={() => setCurrentView('login')} 
+              onRegisterSuccess={() => handleLogin(`${identityData?.nombre || 'Nuevo'} ${identityData?.apellido || 'Usuario'}`)} 
+            />
+          </div>
+        )}
+
+        {currentView === 'dashboard' && (
+          <CitizenDashboard user={user} onLogout={handleLogout} />
+        )}
+
+      </main>
+      <footer className="py-12 bg-white border-t border-gray-50 text-center space-y-4">
+        <div className="w-16 h-16 mx-auto logo-placeholder opacity-20"></div>
+        <div className="w-12 h-1 bg-[#D52B1E] mx-auto rounded-full"></div>
+        <p className="text-[#003366] font-black text-[10px] uppercase tracking-[0.4em]">SIA-PY • MRE • 2025</p>
+        <p className="text-gray-400 text-[10px] font-medium px-6 max-w-xl mx-auto leading-relaxed italic">Ministerio de Relaciones Exteriores de la República del Paraguay. Todos los derechos reservados.</p>
+      </footer>
+    </div>
+  );
+}
