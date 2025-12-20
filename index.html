@@ -42,8 +42,8 @@
             <div class="flex items-center gap-4 cursor-pointer" onclick="app.navigateTo('publico')">
                 <div class="w-12 h-12 bg-navy rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg rotate-2 border border-white/20">MRE</div>
                 <div class="hidden sm:block">
-                    <h1 class="text-navy font-extrabold text-sm leading-tight uppercase serif">Ministerio de Relaciones Exteriores</h1>
-                    <p class="text-[10px] text-paraguay-red font-bold tracking-[0.3em] uppercase">República del Paraguay</p>
+                    <h1 class="text-navy font-extrabold text-sm leading-tight uppercase serif text-left">Ministerio de Relaciones Exteriores</h1>
+                    <p class="text-[10px] text-paraguay-red font-bold tracking-[0.3em] uppercase text-left">República del Paraguay</p>
                 </div>
             </div>
 
@@ -72,7 +72,7 @@
         </div>
     </header>
 
-    <!-- ÁREA DE CONTENIDO (MÓDULOS) -->
+    <!-- ÁREA DE CONTENIDO -->
     <main class="flex-1 relative">
         
         <!-- MÓDULO A: PÚBLICO -->
@@ -124,6 +124,9 @@
                                     <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-navy"></i>
                                     <input type="text" id="login-user" placeholder="Ej: 1.234.567" class="w-full h-14 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-navy focus:bg-white transition-all text-sm" required>
                                 </div>
+                                <div class="text-right px-1">
+                                    <button type="button" onclick="app.navigateTo('recuperar-usuario')" class="text-[10px] font-bold text-navy hover:underline">¿Olvidó su nombre de usuario?</button>
+                                </div>
                             </div>
                             <div class="space-y-2">
                                 <label class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Contraseña</label>
@@ -133,6 +136,9 @@
                                     <button type="button" onclick="app.togglePass('login-pass')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-navy transition-colors">
                                         <i data-lucide="eye" class="w-5 h-5"></i>
                                     </button>
+                                </div>
+                                <div class="text-right px-1">
+                                    <button type="button" onclick="app.navigateTo('recuperar-pass')" class="text-[10px] font-bold text-navy hover:underline">¿Olvidó su contraseña?</button>
                                 </div>
                             </div>
                             <button type="submit" class="w-full h-14 bg-navy text-white font-bold rounded-2xl shadow-xl hover:bg-slate-800 transition-all uppercase tracking-widest text-xs">Acceder ahora</button>
@@ -165,6 +171,122 @@
                             </div>
                         </div>
                     </div>
+                    <div class="bg-gray-50 p-6 text-center border-t border-gray-100">
+                        <p class="text-xs text-gray-400 font-medium tracking-tight">
+                            ¿Aún no tiene una cuenta? <button onclick="app.navigateTo('registro')" class="text-navy font-bold hover:underline ml-1">Cree su cuenta aquí</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUBMÓDULO: REGISTRO -->
+        <section id="mod-registro" class="module-section py-16">
+            <div class="max-w-2xl mx-auto px-6 text-left">
+                <div class="bg-white rounded-[3rem] shadow-2xl border border-gray-100 overflow-hidden">
+                    <div class="p-10 md:p-14">
+                        <h2 class="text-3xl font-black text-navy serif mb-2 text-center">Crear Cuenta</h2>
+                        <p class="text-gray-400 text-sm mb-10 text-center">Complete sus datos para registrarse en el sistema.</p>
+                        
+                        <form onsubmit="app.handleRegistration(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Tipo de documento *</label>
+                                <select class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                                    <option value="CI">Cédula Civil</option>
+                                    <option value="PAS">Pasaporte</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Número de documento *</label>
+                                <input type="text" placeholder="Ej: 1.234.567" class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nombre(s) *</label>
+                                <input type="text" class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Apellido(s) *</label>
+                                <input type="text" class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                            </div>
+                            <div class="md:col-span-2 space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Correo electrónico *</label>
+                                <input type="email" placeholder="usuario@correo.com" class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Contraseña *</label>
+                                <div class="relative">
+                                    <input type="password" id="reg-pass" class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                                    <button type="button" onclick="app.togglePass('reg-pass')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-navy transition-colors">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Confirmar Contraseña *</label>
+                                <input type="password" class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                            </div>
+                            <div class="md:col-span-2 pt-6 flex flex-col items-center gap-4">
+                                <button type="submit" class="w-full bg-navy text-white font-bold py-4 rounded-2xl shadow-xl uppercase tracking-widest text-xs active:scale-95 transition-all">Crear mi cuenta</button>
+                                <button type="button" onclick="app.navigateTo('acceso')" class="text-[10px] font-bold text-gray-400 hover:text-navy uppercase tracking-widest">Ya tengo cuenta, volver</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUBMÓDULO: RECUPERAR USUARIO -->
+        <section id="mod-recuperar-usuario" class="module-section py-16">
+            <div class="max-w-lg mx-auto px-6 text-left">
+                <div class="bg-white rounded-[3rem] shadow-2xl border border-gray-100 overflow-hidden">
+                    <div class="p-10 md:p-14">
+                        <h2 class="text-3xl font-black text-navy serif mb-2 text-center">Recuperar Usuario</h2>
+                        <p class="text-gray-400 text-sm mb-10 text-center">Valide su identidad para recibir su nombre de usuario.</p>
+                        
+                        <form onsubmit="app.handleRecovery(event, 'usuario')" class="space-y-6">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Tipo de documento *</label>
+                                <select class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                                    <option value="CI">Cédula Civil</option>
+                                    <option value="PAS">Pasaporte</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Número de documento *</label>
+                                <input type="text" placeholder="Ej: 1.234.567" class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                            </div>
+                            <div class="pt-6 flex flex-col items-center gap-4">
+                                <button type="submit" class="w-full bg-navy text-white font-bold py-4 rounded-2xl shadow-xl uppercase tracking-widest text-xs active:scale-95 transition-all">Validar y Enviar</button>
+                                <button type="button" onclick="app.navigateTo('acceso')" class="text-[10px] font-bold text-gray-400 hover:text-navy uppercase tracking-widest">Volver al inicio</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUBMÓDULO: RECUPERAR CONTRASEÑA -->
+        <section id="mod-recuperar-pass" class="module-section py-16">
+            <div class="max-w-lg mx-auto px-6 text-left">
+                <div class="bg-white rounded-[3rem] shadow-2xl border border-gray-100 overflow-hidden">
+                    <div class="p-10 md:p-14">
+                        <h2 class="text-3xl font-black text-navy serif mb-2 text-center">Recuperar Contraseña</h2>
+                        <p class="text-gray-400 text-sm mb-10 text-center">Le enviaremos un enlace para restablecer su acceso.</p>
+                        
+                        <form onsubmit="app.handleRecovery(event, 'pass')" class="space-y-6">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Correo electrónico vinculado *</label>
+                                <div class="relative">
+                                    <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300"></i>
+                                    <input type="email" placeholder="usuario@correo.com" class="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-navy" required>
+                                </div>
+                            </div>
+                            <div class="pt-6 flex flex-col items-center gap-4">
+                                <button type="submit" class="w-full bg-navy text-white font-bold py-4 rounded-2xl shadow-xl uppercase tracking-widest text-xs active:scale-95 transition-all">Enviar instrucciones</button>
+                                <button type="button" onclick="app.navigateTo('acceso')" class="text-[10px] font-bold text-gray-400 hover:text-navy uppercase tracking-widest">Volver al inicio</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
@@ -183,22 +305,22 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow text-left">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-12 -mt-12 group-hover:scale-110 transition-transform"></div>
                         <h4 id="stat-total" class="text-4xl font-black text-navy mb-2">0</h4>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Solicitudes Totales</p>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow text-left">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full -mr-12 -mt-12 group-hover:scale-110 transition-transform"></div>
                         <h4 id="stat-pendientes" class="text-4xl font-black text-amber-600 mb-2">0</h4>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">En Análisis</p>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow text-left">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 group-hover:scale-110 transition-transform"></div>
                         <h4 id="stat-aprobados" class="text-4xl font-black text-emerald-600 mb-2">0</h4>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Aprobados</p>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow text-left">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-full -mr-12 -mt-12 group-hover:scale-110 transition-transform"></div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Acceso Rápido</p>
                         <button onclick="app.navigateTo('perfil')" class="flex items-center gap-2 text-navy font-bold text-xs uppercase group-hover:translate-x-1 transition-transform">
@@ -213,7 +335,6 @@
                         <button onclick="app.navigateTo('tramites')" class="text-[10px] font-bold text-gray-400 hover:text-navy uppercase tracking-widest">Ver todo el historial</button>
                     </div>
                     <div id="recent-list" class="divide-y divide-gray-50">
-                        <!-- Items dinámicos -->
                         <div class="p-8 text-center text-gray-400 italic text-sm">No hay actividad reciente.</div>
                     </div>
                 </div>
@@ -243,17 +364,15 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead>
-                                <tr class="bg-slate-50/80 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                                <tr class="bg-slate-50/80 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 text-left">
                                     <th class="px-8 py-5">Código ID</th>
                                     <th class="px-8 py-5">Tipo de Documento</th>
-                                    <th className="px-8 py-5">Fecha</th>
+                                    <th class="px-8 py-5">Fecha</th>
                                     <th class="px-8 py-5">Estado</th>
                                     <th class="px-8 py-5 text-center">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="tramites-table-body" class="divide-y divide-gray-50">
-                                <!-- Filas dinámicas -->
-                            </tbody>
+                            <tbody id="tramites-table-body" class="divide-y divide-gray-50"></tbody>
                         </table>
                     </div>
                 </div>
@@ -389,8 +508,9 @@
 
             // Navegación
             navigateTo(moduleId, params = {}) {
-                // Auth Guard básico
-                if (['dashboard', 'tramites', 'perfil'].includes(moduleId) && !this.state.currentUser) {
+                // Auth Guard básico para módulos internos
+                const authModules = ['dashboard', 'tramites', 'perfil'];
+                if (authModules.includes(moduleId) && !this.state.currentUser) {
                     this.navigateTo('acceso');
                     return;
                 }
@@ -434,21 +554,37 @@
                 lucide.createIcons();
             },
 
-            // --- AUTENTICACIÓN ---
+            // --- AUTENTICACIÓN Y REGISTRO ---
             handleAuth(e) {
                 e.preventDefault();
-                const user = document.getElementById('login-user').value;
-                this.loginSuccess({ nombre: user, ci: '1.234.567', email: 'ciudadano@mre.gov.py', tel: '+595 981 123 456' });
+                const userVal = document.getElementById('login-user').value;
+                this.loginSuccess({ nombre: userVal, ci: '1.234.567', email: 'ciudadano@mre.gov.py', tel: '+595 981 123 456' });
+            },
+
+            handleRegistration(e) {
+                e.preventDefault();
+                alert("Cuenta creada con éxito. Completando perfil...");
+                this.loginSuccess({ nombre: "Nuevo Usuario", ci: "7.000.000", email: "", tel: "" });
+                this.navigateTo('perfil'); 
+            },
+
+            handleRecovery(e, type) {
+                e.preventDefault();
+                const msg = type === 'usuario' 
+                    ? "Si los datos coinciden, recibirá su nombre de usuario por correo." 
+                    : "Hemos enviado un enlace de recuperación a su casilla de correo.";
+                alert(msg);
+                this.navigateTo('acceso');
             },
 
             simulateExternalLogin(provider) {
-                console.log(`Autenticando con ${provider}...`);
                 if (provider === 'Google') {
                     this.loginSuccess({ nombre: "Carlos Gómez", ci: "4.555.666", email: "carlos.gomez@gmail.com", tel: "+595 971 000 000" });
+                } else if (provider === 'Facebook') {
+                    this.loginSuccess({ nombre: "María Rodríguez", ci: "3.888.777", email: "maria.r@fb.com", tel: "+595 981 000 000" });
                 } else {
-                    // Identidad Electrónica - Flujo de "No existe, completar perfil"
-                    this.loginSuccess({ nombre: "Nuevo Usuario", ci: "7.000.000", email: "", tel: "" });
-                    this.navigateTo('perfil'); // Forzamos a completar datos
+                    // Identidad Electrónica - Requiere registro/perfil
+                    this.navigateTo('registro');
                 }
             },
 
@@ -510,10 +646,10 @@
 
                 body.innerHTML = data.map(t => `
                     <tr class="hover:bg-blue-50/20 transition-colors">
-                        <td class="px-8 py-5 font-black text-navy text-xs uppercase">${t.id}</td>
-                        <td class="px-8 py-5 font-semibold text-gray-700 text-xs">${t.tipo}</td>
-                        <td class="px-8 py-5 text-gray-400 italic text-xs font-mono">${t.fecha}</td>
-                        <td class="px-8 py-5">
+                        <td class="px-8 py-5 font-black text-navy text-xs uppercase text-left">${t.id}</td>
+                        <td class="px-8 py-5 font-semibold text-gray-700 text-xs text-left">${t.tipo}</td>
+                        <td class="px-8 py-5 text-gray-400 italic text-xs font-mono text-left">${t.fecha}</td>
+                        <td class="px-8 py-5 text-left">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${t.estado === 'Aprobado' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">
                                 ${t.estado}
                             </span>
@@ -567,11 +703,9 @@
                 const today = new Date().toLocaleDateString('es-PY');
 
                 if (id) {
-                    // Update
                     const index = this.state.tramites.findIndex(t => t.id === id);
                     this.state.tramites[index].tipo = type;
                 } else {
-                    // Create
                     const newId = `SIA-2025-${(this.state.tramites.length + 1).toString().padStart(3, '0')}`;
                     this.state.tramites.push({ id: newId, tipo: type, fecha: today, estado: 'En Análisis' });
                 }
@@ -613,7 +747,6 @@
             }
         };
 
-        // Iniciar app al cargar ventana
         window.onload = () => app.init();
     </script>
 </body>
