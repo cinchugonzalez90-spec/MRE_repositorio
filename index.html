@@ -3,550 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Ciudadano - MRE Paraguay</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>SIA-PY | Sistema de Apostilla Electrónica</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* RESET Y ESTILOS GLOBALES */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --soft-bg: #f0f4f8; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            background-color: var(--soft-bg);
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
             min-height: 100vh;
-            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            position: relative;
+            color: #1E293B;
+            overflow-x: hidden;
         }
-        
-        /* BANDERA TRICOLOR SUPERIOR */
-        .tricolor-bar {
+
+        /* Elegant background with subtle orbs */
+        .elegant-background {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 8px;
-            display: flex;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            inset: 0;
+            z-index: -1;
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 40, 85, 0.06) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(255, 255, 255, 0.8) 0px, transparent 100%);
         }
-        
-        .tricolor-bar div:nth-child(1) {
-            background: #D52B1E;
-            flex: 1;
-        }
-        
-        .tricolor-bar div:nth-child(2) {
-            background: white;
-            flex: 1;
-            border-left: 1px solid #eee;
-            border-right: 1px solid #eee;
-        }
-        
-        .tricolor-bar div:nth-child(3) {
-            background: #0038A8;
-            flex: 1;
-        }
-        
-        /* CONTENEDOR PRINCIPAL */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 100px 20px 50px;
-        }
-        
-        /* HEADER */
-        .header {
-            background: white;
-            padding: 20px 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 51, 102, 0.08);
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .logo {
-            width: 70px;
-            height: 70px;
-            background: #003366;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 24px;
-            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.2);
-        }
-        
-        .title-section h1 {
-            color: #003366;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .title-section p {
-            color: #D52B1E;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 2px;
-        }
-        
-        .contact-info {
-            text-align: right;
-        }
-        
-        .contact-info p:first-child {
-            color: #666;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .contact-info p:last-child {
-            color: #003366;
-            font-size: 18px;
-            font-weight: 700;
-        }
-        
-        /* PANELES DE RECUPERACIÓN */
-        .recovery-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .recovery-container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .recovery-card {
-            background: white;
-            border-radius: 25px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 51, 102, 0.1);
-            border: 1px solid #e2e8f0;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .recovery-card::before {
-            content: '';
+
+        .bg-pattern {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
+            height: 100%;
+            opacity: 0.5;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23002855' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Highly visible card */
+        .auth-card {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 
+                0 10px 15px -3px rgba(0, 0, 0, 0.05),
+                0 25px 50px -12px rgba(0, 40, 85, 0.15),
+                0 0 0 1px rgba(0, 40, 85, 0.05);
+            width: 100%;
+            max-width: 440px;
+            padding: 2.2rem 2.5rem;
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-card.wide-mode { max-width: 650px; }
+        .hidden { display: none !important; }
+
+        .tricolor-line {
             height: 5px;
-            background: linear-gradient(90deg, #D52B1E, #0038A8);
-        }
-        
-        .card-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .card-header h2 {
-            color: #003366;
-            font-size: 28px;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-        .card-header p {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        /* FORMULARIOS */
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
-            color: #003366;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 8px;
-            padding-left: 5px;
-        }
-        
-        .input-with-icon {
-            position: relative;
-        }
-        
-        .input-with-icon i {
+            width: 120px;
+            background: linear-gradient(to right, var(--mre-red) 33.3%, #ffffff 33.3%, #ffffff 66.6%, var(--mre-blue-light) 66.6%);
             position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
-        .input-with-icon select,
-        .input-with-icon input {
+
+        .logo-section { margin-bottom: 1.5rem; }
+        .system-title { color: var(--mre-blue); font-weight: 900; letter-spacing: -1.5px; font-size: 1.8rem; margin-bottom: 0.1rem; }
+        .system-subtitle { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 4px; color: #94A3B8; font-weight: 800; }
+
+        .form-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-bottom: 0.3rem; display: block; letter-spacing: 0.8px; }
+        .required-star { color: var(--mre-red); margin-left: 2px; font-weight: bold; }
+
+        .input-wrapper { position: relative; margin-bottom: 0.4rem; }
+        .form-control-mre {
+            background-color: var(--input-bg);
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            font-size: 0.85rem;
             width: 100%;
-            padding: 15px 15px 15px 45px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            background: #f8fafc;
-            transition: all 0.3s;
+            transition: all 0.25s ease;
+            color: var(--mre-blue);
+            font-weight: 500;
         }
-        
-        .input-with-icon select:focus,
-        .input-with-icon input:focus {
-            outline: none;
-            border-color: #003366;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+        .form-control-mre:focus { 
+            background-color: #ffffff; 
+            border-color: var(--mre-blue-light); 
+            box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.08); 
+            outline: none; 
         }
-        
-        /* BOTONES */
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 40px;
-        }
-        
-        .btn-primary {
-            background: #003366;
-            color: white;
+        .form-control-mre:disabled { background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+
+        .input-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94A3B8; pointer-events: none; }
+        .btn-toggle-pass { position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94A3B8; padding: 5px; display: flex; align-items: center; cursor: pointer; }
+
+        .recovery-link, .help-link { font-size: 0.65rem; color: var(--mre-blue-light); text-decoration: none; font-weight: 700; transition: color 0.2s; display: inline-block; margin-top: 4px; }
+        .recovery-link:hover, .help-link:hover { color: var(--mre-red); text-decoration: underline; }
+
+        .btn-main {
+            background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%);
+            color: #ffffff;
             border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 14px;
+            padding: 0.95rem;
+            font-weight: 800;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            box-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.15);
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: all 0.3s;
+        }
+
+        .btn-main:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 15px 25px -5px rgba(0, 40, 85, 0.25); }
+
+        /* Secondary social buttons style */
+        .btn-social-secondary {
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 0.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            transition: all 0.2s;
+            width: 100%;
+            cursor: pointer;
         }
-        
-        .btn-primary:hover {
-            background: #002244;
+
+        .btn-social-secondary:hover { transform: translateY(-2px); border-color: var(--mre-blue-light); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        .btn-idp-prominent {
+            background: #ffffff;
+            border: 2px solid var(--mre-blue);
+            color: var(--mre-blue);
+            border-radius: 14px;
+            padding: 0.95rem;
+            font-weight: 800;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-idp-prominent:hover {
+            background: var(--mre-blue);
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 51, 102, 0.2);
+            box-shadow: 0 10px 20px rgba(0, 40, 85, 0.1);
         }
-        
-        .btn-secondary {
-            background: white;
-            color: #003366;
-            border: 2px solid #003366;
-            padding: 14px;
+
+        .error-message-box {
+            display: none;
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #be123c;
+            font-size: 0.7rem;
+            padding: 12px;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
+            margin-bottom: 1rem;
+            text-align: left;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        
-        .btn-secondary:hover {
-            background: #f1f5f9;
-            transform: translateY(-2px);
-        }
-        
-        /* MENSAJE DE ÉXITO */
-        .success-message {
-            text-align: center;
-            padding: 30px;
-            background: #f0f9ff;
-            border-radius: 20px;
-            border-left: 5px solid #10b981;
-        }
-        
-        .success-message h3 {
-            color: #003366;
-            margin-bottom: 15px;
-            font-size: 22px;
-        }
-        
-        .success-message p {
-            color: #666;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-        
-        /* PANTALLA DE INICIO */
-        .login-container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 25px;
-            padding: 50px;
-            box-shadow: 0 20px 40px rgba(0, 51, 102, 0.1);
-            border: 1px solid #e2e8f0;
-        }
-        
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .login-header h2 {
-            color: #003366;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .login-header p {
-            color: #666;
-        }
-        
-        /* DIVISOR */
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 30px 0;
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #e2e8f0;
-        }
-        
-        .divider span {
-            padding: 0 15px;
-        }
-        
-        /* OPCIONES EXTRAS */
-        .extra-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .extra-btn {
-            padding: 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            background: white;
-            font-weight: 600;
-            color: #003366;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .extra-btn:hover {
-            background: #f8fafc;
-            border-color: #003366;
-        }
-        
-        /* FOOTER */
-        .footer {
-            text-align: center;
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid #e2e8f0;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .footer p {
-            margin: 10px 0;
-        }
+
+        .divider { display: flex; align-items: center; text-align: center; margin: 1.5rem 0; color: #CBD5E1; font-size: 0.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #E2E8F0; }
+        .divider:not(:empty)::before { margin-right: 1rem; }
+        .divider:not(:empty)::after { margin-left: 1rem; }
+
+        .social-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 0.8rem; }
+
+        .btn-back { background: none; border: none; color: #64748B; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 5px; margin-bottom: 1.2rem; }
+
+        .legend-box { font-size: 0.65rem; color: #64748B; background: #F8FAFC; padding: 12px; border-radius: 12px; border-left: 4px solid var(--mre-blue-light); text-align: left; margin-top: 1rem; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; }
+        .policy-box { font-size: 0.6rem; color: #64748B; background: #F8FAFC; padding: 12px; border-radius: 12px; margin-top: 0.8rem; border: 1px solid #E2E8F0; text-align: left; }
+
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.2); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 500px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); border: 1px solid rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
-    <!-- BANDA TRICOLOR -->
-    <div class="tricolor-bar">
-        <div></div>
-        <div></div>
-        <div></div>
+
+    <div class="elegant-background"></div>
+    <div class="bg-pattern"></div>
+
+    <!-- MODAL AYUDA DOCUMENTO -->
+    <div class="mre-modal-overlay" id="helpModal">
+        <div class="mre-modal text-center">
+            <button class="btn-close position-absolute top-0 end-0 m-4" onclick="closeHelp()"></button>
+            <h5 class="fw-black text-uppercase mb-3" style="color: var(--mre-blue)">Ayuda: Número de Documento</h5>
+            <p class="text-muted small">Por favor, ingrese el número resaltado en el recuadro rojo de su documento original.</p>
+            <div style="background: #F8FAFC; border: 2px dashed #E2E8F0; border-radius: 16px; padding: 25px; margin: 20px 0;">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="small fw-bold text-muted text-uppercase">Pasaporte / DNI Extranjero</span>
+                    <span style="border: 2px solid var(--mre-red); padding: 4px 8px; color: var(--mre-red); font-weight: 900; border-radius: 4px;">N° 12345678</span>
+                </div>
+                <div style="height: 100px; background: #EDF2F7; border-radius: 8px; display:flex; align-items:center; justify-content:center; color: #A0AEC0;">
+                    <i data-lucide="file-text" style="width: 40px; height: 40px;"></i>
+                </div>
+            </div>
+            <button class="btn btn-primary w-100 rounded-pill fw-bold py-2" style="background: var(--mre-blue); border: none;" onclick="closeHelp()">Entendido</button>
+        </div>
     </div>
-    
-    <div class="container">
-        <!-- ENCABEZADO -->
-        <div class="header">
-            <div class="logo-section">
-                <div class="logo">MRE</div>
-                <div class="title-section">
-                    <h1>Ministerio de Relaciones Exteriores</h1>
-                    <p>REPÚBLICA DEL PARAGUAY</p>
+
+    <!-- PANTALLA LOGIN -->
+    <div class="auth-card text-center" id="loginScreen">
+        <div class="tricolor-line"></div>
+        <div class="logo-section">
+            <div class="d-inline-flex align-items-center justify-content-center bg-white p-2 rounded-4 mb-3" style="box-shadow: 0 8px 16px rgba(0, 40, 85, 0.08); width: 64px; height: 64px; border: 1px solid #E2E8F0;">
+                <i data-lucide="globe" class="text-primary" style="width: 32px; height: 32px; color: var(--mre-blue) !important;"></i>
+            </div>
+            <h1 class="system-title text-uppercase">SIA-PY</h1>
+            <p class="system-subtitle">Apostilla Electrónica</p>
+        </div>
+
+        <div id="loginError" class="error-message-box"><i data-lucide="alert-triangle" class="size-4"></i> Por favor complete sus credenciales para ingresar.</div>
+
+        <form class="text-start" id="formLogin">
+            <div class="mb-3">
+                <label class="form-label">Correo Electrónico <span class="required-star">*</span></label>
+                <div class="input-wrapper">
+                    <i data-lucide="mail" class="input-icon" style="width: 16px;"></i>
+                    <input type="email" class="form-control-mre" placeholder="ejemplo@correo.com.py" required>
+                </div>
+                <div class="text-start">
+                    <a href="javascript:void(0)" onclick="showScreen('forgotEmail')" class="recovery-link">¿Has olvidado tu correo electrónico?</a>
                 </div>
             </div>
-            <div class="contact-info">
-                <p>ATENCIÓN AL CIUDADANO</p>
-                <p>+595 21 414 8000</p>
+
+            <div class="mb-3">
+                <label class="form-label">Contraseña <span class="required-star">*</span></label>
+                <div class="input-wrapper">
+                    <i data-lucide="lock" class="input-icon" style="width: 16px;"></i>
+                    <input type="password" class="form-control-mre" placeholder="••••••••••••" id="loginPass" required>
+                    <button type="button" class="btn-toggle-pass" onclick="togglePassword('loginPass', 'loginEye')">
+                        <i data-lucide="eye" id="loginEye" style="width: 18px;"></i>
+                    </button>
+                </div>
+                <div class="text-start">
+                    <a href="javascript:void(0)" onclick="showScreen('forgotUser')" class="recovery-link">¿Has olvidado tu usuario?</a>
+                </div>
             </div>
+
+            <button type="submit" class="btn-main">Ingresar al Sistema</button>
+
+            <div class="divider">O acceder mediante</div>
+
+            <!-- Identidad Electrónica - Prominent Full Width Button -->
+            <button type="button" class="btn-idp-prominent" onclick="showScreen('idpLogin')">
+                <div class="d-flex" style="height: 14px; width: 22px; border-radius: 2px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
+                    <div class="h-100" style="width: 33.3%; background: var(--mre-red);"></div>
+                    <div class="h-100" style="width: 33.3%; background: #ffffff;"></div>
+                    <div class="h-100" style="width: 33.3%; background: var(--mre-blue-light);"></div>
+                </div>
+                Identidad Electrónica
+            </button>
+
+            <!-- Social Row with Google and Facebook side by side -->
+            <div class="social-row">
+                <button type="button" class="btn-social-secondary" onclick="showScreen('facebookLogin')" title="Facebook">
+                    <i data-lucide="facebook" style="color: #1877F2; fill: #1877F2; width: 20px;"></i>
+                </button>
+                <button type="button" class="btn-social-secondary" onclick="showScreen('googleLogin')" title="Google">
+                    <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="text-center mt-4">
+                <p style="font-size: 0.8rem; font-weight: 700; color: #64748B; margin-bottom: 0;">
+                    ¿No tienes cuenta? <a href="javascript:void(0)" onclick="showScreen('register')" style="color: var(--mre-blue); text-decoration: underline;">Regístrate ahora</a>
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <!-- RECUPERAR CORREO -->
+    <div class="auth-card hidden" id="forgotEmailScreen">
+        <div class="tricolor-line"></div>
+        <button class="btn-back" onclick="showScreen('login')"><i data-lucide="chevron-left" style="width: 14px;"></i> Volver</button>
+        <div class="logo-section text-center"><h1 class="system-title text-uppercase" style="font-size: 1.5rem;">Recuperar Correo</h1></div>
+        
+        <div id="forgotEmailError" class="error-message-box"><i data-lucide="alert-triangle" class="size-4"></i> Complete los datos del documento para continuar.</div>
+
+        <form class="text-start" id="formForgotEmail">
+            <div class="mb-3">
+                <label class="form-label">Tipo de Usuario / Documento <span class="required-star">*</span></label>
+                <select class="form-control-mre" style="padding-left: 1rem;" required>
+                    <option value="">Seleccione tipo...</option>
+                    <option value="ci">Cédula de Identidad Civil</option>
+                    <option value="pas">Pasaporte</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Número de documento <span class="required-star">*</span></label>
+                <input type="text" class="form-control-mre" placeholder="Ej: 1234567" style="padding-left: 1rem;" required>
+            </div>
+            <button type="submit" class="btn-main">Recuperar Correo</button>
+            <div class="legend-box">Se le estará enviando una notificación al correo electrónico registrado para que pueda cambiar su contraseña.</div>
+        </form>
+    </div>
+
+    <!-- RECUPERAR USUARIO -->
+    <div class="auth-card hidden" id="forgotUserScreen">
+        <div class="tricolor-line"></div>
+        <button class="btn-back" onclick="showScreen('login')"><i data-lucide="chevron-left" style="width: 14px;"></i> Volver</button>
+        <div class="logo-section text-center"><h1 class="system-title text-uppercase" style="font-size: 1.5rem;">Recuperar Usuario</h1></div>
+        
+        <div id="forgotUserError" class="error-message-box"><i data-lucide="alert-triangle" class="size-4"></i> Ingrese su correo electrónico registrado.</div>
+
+        <form class="text-start" id="formForgotUser">
+            <div class="mb-3">
+                <label class="form-label">Correo Electrónico Registrado <span class="required-star">*</span></label>
+                <input type="email" class="form-control-mre" placeholder="nombre@ejemplo.com" style="padding-left: 1rem;" required>
+            </div>
+            <button type="submit" class="btn-main">Recuperar Usuario</button>
+            <div class="legend-box">Se le estará enviando una notificación al correo electrónico registrado para que pueda cambiar su contraseña.</div>
+        </form>
+    </div>
+
+    <!-- REGISTRO TRADICIONAL -->
+    <div class="auth-card wide-mode hidden" id="registerScreen">
+        <div class="tricolor-line"></div>
+        <button class="btn-back" onclick="showScreen('login')"><i data-lucide="chevron-left" style="width: 14px;"></i> Volver</button>
+        <div class="logo-section text-center"><h1 class="system-title text-uppercase" style="font-size: 1.6rem;">Crear Cuenta</h1><p class="system-subtitle">Registro Tradicional</p></div>
+        
+        <div id="registerError" class="error-message-box"><i data-lucide="alert-triangle" class="size-4"></i> Todos los campos con asterisco rojo son obligatorios.</div>
+
+        <form class="row g-3 text-start" id="formRegister">
+            <div class="col-md-6"><label class="form-label">Tipo de documento <span class="required-star">*</span></label><select class="form-control-mre" id="regDocType" onchange="toggleDocHelp()" style="padding-left: 1rem;" required><option value="">Seleccione...</option><option value="ci">Cédula de Identidad Civil</option><option value="pas">Pasaporte</option><option value="dni">DNI Extranjero</option></select></div>
+            <div class="col-md-6"><label class="form-label">Número de documento <span class="required-star">*</span></label><input type="text" class="form-control-mre" placeholder="Ej: 1234567" style="padding-left: 1rem;" required><a href="javascript:void(0)" id="docHelpLink" onclick="openHelp()" class="help-link hidden">¿Dónde está el número?</a></div>
+            <div class="col-md-6"><label class="form-label">Nombres <span class="required-star">*</span></label><input type="text" class="form-control-mre" style="padding-left: 1rem;" required></div>
+            <div class="col-md-6"><label class="form-label">Apellidos <span class="required-star">*</span></label><input type="text" class="form-control-mre" style="padding-left: 1rem;" required></div>
+            <div class="col-md-6"><label class="form-label">Nacionalidad <span class="required-star">*</span></label><select class="form-control-mre" style="padding-left: 1rem;" required><option value="">Seleccione...</option><option>Paraguaya</option><option>Argentina</option><option>Brasileña</option><option>Boliviana</option><option>Chilena</option></select></div>
+            <div class="col-md-6"><label class="form-label">Celular <span class="required-star">*</span></label><input type="tel" class="form-control-mre" style="padding-left: 1rem;" required></div>
+            <div class="col-12"><label class="form-label">Dirección <span class="required-star">*</span></label><input type="text" class="form-control-mre" style="padding-left: 1rem;" required></div>
+            <div class="col-12"><label class="form-label">Correo Electrónico <span class="required-star">*</span></label><input type="email" class="form-control-mre" style="padding-left: 1rem;" required></div>
+            <div class="col-md-6"><label class="form-label">Contraseña <span class="required-star">*</span></label><div class="input-wrapper"><input type="password" class="form-control-mre" id="regP" style="padding-left: 1rem;" required><button type="button" class="btn-toggle-pass" onclick="togglePassword('regP', 'e1')"><i data-lucide="eye" id="e1" style="width: 18px;"></i></button></div></div>
+            <div class="col-md-6"><label class="form-label">Confirmar Contraseña <span class="required-star">*</span></label><div class="input-wrapper"><input type="password" class="form-control-mre" id="regCP" style="padding-left: 1rem;" required><button type="button" class="btn-toggle-pass" onclick="togglePassword('regCP', 'e2')"><i data-lucide="eye" id="e2" style="width: 18px;"></i></button></div></div>
+            <div class="col-12"><div class="policy-box"><strong>Política de seguridad:</strong> La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.</div><button type="submit" class="btn-main">Registrar mi cuenta</button></div>
+        </form>
+    </div>
+
+    <!-- DATOS ADICIONALES DEL REGISTRO -->
+    <div class="auth-card wide-mode hidden" id="completeDataScreen">
+        <div class="tricolor-line"></div>
+        <button class="btn-back mt-2" onclick="showScreen('login')"><i data-lucide="chevron-left" style="width: 14px;"></i> Volver</button>
+        <div class="logo-section text-center">
+            <h1 class="system-title text-uppercase" style="font-size: 1.5rem;">Datos Adicionales del Registro</h1>
+            <p class="system-subtitle">Completar los datos adicionales del registro</p>
         </div>
         
-        <!-- CONTENIDO PRINCIPAL -->
-        <div id="content">
-            <!-- Esta es la pantalla de recuperación que pediste -->
-            <div class="recovery-container">
-                <!-- COLUMNA IZQUIERDA: RECUPERAR USUARIO -->
-                <div class="recovery-card">
-                    <div class="card-header">
-                        <h2>Recuperar usuario</h2>
-                        <p>Complete los datos para validar su identidad.</p>
-                    </div>
-                    
-                    <form id="recoveryUserForm">
-                        <div class="form-group">
-                            <label for="documentType">Tipo de documento *</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-id-card"></i>
-                                <select id="documentType" required>
-                                    <option value="">Seleccione tipo</option>
-                                    <option value="CI">Cédula de Identidad</option>
-                                    <option value="DNI">DNI Extranjero</option>
-                                    <option value="PAS">Pasaporte</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="documentNumber">Número de documento *</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-hashtag"></i>
-                                <input type="text" id="documentNumber" placeholder="Ej: 1.234.567" required>
-                            </div>
-                        </div>
-                        
-                        <div class="button-group">
-                            <button type="submit" class="btn-primary">
-                                <i class="fas fa-paper-plane"></i>
-                                VALIDAR Y ENVIAR
-                            </button>
-                            <button type="button" class="btn-secondary" onclick="showLogin()">
-                                <i class="fas fa-arrow-left"></i>
-                                VOLVER AL ACCESO
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <!-- Mensaje de éxito (oculto inicialmente) -->
-                    <div id="userSuccessMessage" class="success-message" style="display: none;">
-                        <h3>Instrucciones enviadas</h3>
-                        <p>Si los datos coinciden, hemos enviado su nombre de usuario al correo vinculado a su documento.</p>
-                        <button class="btn-primary" onclick="showLogin()">
-                            <i class="fas fa-check"></i>
-                            ENTENDIDO
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- COLUMNA DERECHA: RECUPERAR CONTRASEÑA -->
-                <div class="recovery-card">
-                    <div class="card-header">
-                        <h2>Recuperar contraseña</h2>
-                        <p>Ingrese su correo para recibir un enlace de recuperación.</p>
-                    </div>
-                    
-                    <form id="recoveryPasswordForm">
-                        <div class="form-group">
-                            <label for="email">Correo electrónico *</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-envelope"></i>
-                                <input type="email" id="email" placeholder="usuario@correo.com" required>
-                            </div>
-                        </div>
-                        
-                        <div class="button-group">
-                            <button type="submit" class="btn-primary">
-                                <i class="fas fa-key"></i>
-                                RESTABLECER ACCESO
-                            </button>
-                            <button type="button" class="btn-secondary" onclick="showLogin()">
-                                <i class="fas fa-arrow-left"></i>
-                                VOLVER AL ACCESO
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <!-- Mensaje de éxito (oculto inicialmente) -->
-                    <div id="passwordSuccessMessage" class="success-message" style="display: none;">
-                        <h3>Correo enviado</h3>
-                        <p>Hemos enviado un enlace seguro a su casilla de correo para que pueda generar una nueva contraseña.</p>
-                        <button class="btn-primary" onclick="showLogin()">
-                            <i class="fas fa-check"></i>
-                            VOLVER AL INICIO
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div id="completeDataError" class="error-message-box"><i data-lucide="alert-triangle" class="size-4"></i> Complete el número de celular y dirección para finalizar.</div>
+
+        <div class="legend-box" style="border-left-color: var(--mre-red); background: #fff5f5; color: #c53030; border-top: 1px solid rgba(213, 43, 30, 0.1); border-right: 1px solid rgba(213, 43, 30, 0.1); border-bottom: 1px solid rgba(213, 43, 30, 0.1);">
+            <strong>Atención:</strong> Debe completar necesariamente los datos adicionales para formalizar su registro en el sistema.
         </div>
-        
-        <div class="footer">
-            <p>Ministerio de Relaciones Exteriores - República del Paraguay</p>
-            <p>© 2024 - Todos los derechos reservados</p>
+        <form class="row g-3 text-start mt-2" id="formCompleteData">
+            <div class="col-md-6"><label class="form-label">Tipo de documento</label><select class="form-control-mre" id="extDocType" disabled><option value="ci">Cédula de Identidad Civil</option></select></div>
+            <div class="col-md-6"><label class="form-label">Número de documento</label><input type="text" class="form-control-mre" id="extDocNum" disabled></div>
+            <div class="col-md-6"><label class="form-label">Nombres</label><input type="text" class="form-control-mre" id="extName" disabled></div>
+            <div class="col-md-6"><label class="form-label">Apellidos</label><input type="text" class="form-control-mre" id="extSurname" disabled></div>
+            <div class="col-md-6"><label class="form-label">Nacionalidad</label><select class="form-control-mre" id="extNacionality" disabled><option value="PY">Paraguaya</option></select></div>
+            <div class="col-md-6"><label class="form-label">Celular <span class="required-star">*</span></label><input type="tel" class="form-control-mre" id="extPhone" required></div>
+            <div class="col-12"><label class="form-label">Dirección <span class="required-star">*</span></label><input type="text" class="form-control-mre" id="extAddress" required></div>
+            <div class="col-12"><button type="submit" class="btn-main">Acceder al registro del sistema</button></div>
+        </form>
+    </div>
+
+    <!-- PANTALLAS SIMULADAS -->
+    <div class="auth-card text-center hidden" id="idpLoginScreen">
+        <div class="tricolor-line"></div>
+        <div class="logo-section mt-3"><h5 class="fw-bold mb-4 text-uppercase" style="color: var(--mre-blue); font-size: 1.1rem;">Portal Identidad Electrónica</h5></div>
+        <form class="text-start" onsubmit="event.preventDefault(); processExternalLogin('idp');">
+            <div class="mb-3"><label class="form-label">Cédula de Identidad</label><input type="text" class="form-control-mre" style="padding-left: 1rem;" value="4567890"></div>
+            <div class="mb-3"><label class="form-label">Contraseña</label><input type="password" class="form-control-mre" style="padding-left: 1rem;" value="********"></div>
+            <button type="submit" class="btn-main">ACCEDER</button>
+            <button type="button" class="btn btn-link w-100 mt-2 text-muted small text-decoration-none" onclick="showScreen('login')">Cancelar</button>
+        </form>
+    </div>
+
+    <div class="auth-card text-center hidden" id="facebookLoginScreen">
+        <i data-lucide="facebook" class="mb-3" style="color: #1877F2; width: 48px; height: 48px;"></i>
+        <h5 class="fw-bold mb-4">Iniciar sesión con Facebook</h5>
+        <button type="button" class="btn btn-primary w-100 fw-bold py-3" style="border-radius: 14px;" onclick="processExternalLogin('facebook')">Continuar como Usuario</button>
+        <button type="button" class="btn btn-link w-100 mt-2 text-muted small" onclick="showScreen('login')">Cancelar</button>
+    </div>
+
+    <div class="auth-card text-center hidden" id="googleLoginScreen">
+        <div class="mb-3 d-flex justify-content-center">
+            <svg style="width: 48px; height: 48px;" viewBox="0 0 24 24">
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            </svg>
+        </div>
+        <h5 class="fw-normal mb-4">Seleccionar una cuenta de Google</h5>
+        <button type="button" class="btn btn-outline-secondary w-100 py-3" style="border-radius: 14px;" onclick="processExternalLogin('google')">
+            <span class="fw-bold">usuario.ejemplo@gmail.com</span>
+        </button>
+        <button type="button" class="btn btn-link w-100 mt-2 text-muted small" onclick="showScreen('login')">Cancelar</button>
+    </div>
+
+    <!-- DASHBOARD FINAL -->
+    <div class="auth-card wide-mode hidden" id="dashboardScreen">
+        <div class="tricolor-line"></div>
+        <div class="text-center py-5">
+            <i data-lucide="user-check" class="text-success mb-3" style="width: 64px; height: 64px;"></i>
+            <h3 class="fw-black text-navy text-uppercase">Portal Ciudadano</h3>
+            <p class="text-muted">Bienvenido al Sistema de Apostilla Electrónica.</p>
+            <button class="btn btn-outline-danger mt-5 w-100 rounded-pill fw-bold" onclick="showScreen('login')">Cerrar Sesión</button>
         </div>
     </div>
 
     <script>
-        // Funciones para manejar los formularios
-        document.getElementById('recoveryUserForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Mostrar estado de carga
-            const submitBtn = this.querySelector('.btn-primary');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VALIDANDO...';
-            submitBtn.disabled = true;
-            
-            // Simular envío después de 1.5 segundos
-            setTimeout(() => {
-                // Ocultar formulario y mostrar mensaje de éxito
-                this.style.display = 'none';
-                document.getElementById('userSuccessMessage').style.display = 'block';
-            }, 1500);
-        });
-        
-        document.getElementById('recoveryPasswordForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Mostrar estado de carga
-            const submitBtn = this.querySelector('.btn-primary');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ENVIANDO...';
-            submitBtn.disabled = true;
-            
-            // Simular envío después de 1.5 segundos
-            setTimeout(() => {
-                // Ocultar formulario y mostrar mensaje de éxito
-                this.style.display = 'none';
-                document.getElementById('passwordSuccessMessage').style.display = 'block';
-            }, 1500);
-        });
-        
-        // Función para cambiar a pantalla de login (simulación)
-        function showLogin() {
-            alert('Esta función llevaría a la pantalla de inicio de sesión');
-            // En una implementación real, aquí cambiarías el contenido
+        lucide.createIcons();
+
+        function hideErrorMessages() {
+            document.querySelectorAll('.error-message-box').forEach(el => el.style.display = 'none');
         }
+
+        function setupValidation(formId, errorBoxId, successCallback) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                hideErrorMessages();
+
+                if (!form.checkValidity()) {
+                    document.getElementById(errorBoxId).style.display = 'flex';
+                    form.reportValidity();
+                } else {
+                    if (successCallback) successCallback();
+                }
+            });
+        }
+
+        setupValidation('formLogin', 'loginError', () => showScreen('dashboard'));
+        setupValidation('formForgotEmail', 'forgotEmailError', () => { 
+            alert('Se ha enviado la notificación para recuperar su correo.');
+            showScreen('login');
+        });
+        setupValidation('formForgotUser', 'forgotUserError', () => {
+            alert('Se ha enviado su nombre de usuario por correo electrónico.');
+            showScreen('login');
+        });
+        setupValidation('formRegister', 'registerError', () => {
+            alert('Cuenta creada exitosamente. Por favor inicie sesión.');
+            showScreen('login');
+        });
+        setupValidation('formCompleteData', 'completeDataError', () => showScreen('dashboard'));
+
+        function showScreen(screenId) {
+            hideErrorMessages();
+            const screens = ['loginScreen', 'forgotEmailScreen', 'forgotUserScreen', 'registerScreen', 'idpLoginScreen', 'facebookLoginScreen', 'googleLoginScreen', 'completeDataScreen', 'dashboardScreen'];
+            screens.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+            const target = document.getElementById(screenId + 'Screen') || document.getElementById(screenId);
+            if (target) {
+                target.classList.remove('hidden');
+                if(screenId === 'register' || screenId === 'completeData' || screenId === 'dashboard') target.classList.add('wide-mode');
+                else target.classList.remove('wide-mode');
+            }
+            lucide.createIcons();
+        }
+
+        function togglePassword(inputId, eyeId) {
+            const input = document.getElementById(inputId);
+            const eye = document.getElementById(eyeId);
+            const isPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPassword ? 'text' : 'password');
+            eye.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        }
+
+        function processExternalLogin(provider) {
+            const docT = document.getElementById('extDocType'); const docN = document.getElementById('extDocNum');
+            const name = document.getElementById('extName'); const sur = document.getElementById('extSurname');
+            const nac = document.getElementById('extNacionality');
+
+            if (provider === 'facebook') { showScreen('dashboard'); return; }
+
+            if (provider === 'idp') {
+                docT.value = "ci"; docT.disabled = true; docN.value = "4.567.890"; docN.disabled = true;
+                name.value = "JUAN"; name.disabled = true; sur.value = "PEREZ"; sur.disabled = true;
+                nac.value = "PY"; nac.disabled = true;
+            } else if (provider === 'google') {
+                docT.disabled = false; docN.disabled = false; nac.disabled = false;
+                name.value = "JUAN"; name.disabled = true; sur.value = "PEREZ"; sur.disabled = true;
+            }
+            showScreen('completeData');
+        }
+
+        function toggleDocHelp() {
+            const val = document.getElementById('regDocType').value;
+            const l = document.getElementById('docHelpLink');
+            if (val === 'pas' || val === 'dni') l.classList.remove('hidden'); else l.classList.add('hidden');
+        }
+
+        function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
+        function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
     </script>
 </body>
 </html>
