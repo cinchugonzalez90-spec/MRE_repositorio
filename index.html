@@ -1,2 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Ciudadano - MRE Paraguay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* RESET Y ESTILOS GLOBALES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        /* BANDERA TRICOLOR SUPERIOR */
+        .tricolor-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            display: flex;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tricolor-bar div:nth-child(1) {
+            background: #D52B1E;
+            flex: 1;
+        }
+        
+        .tricolor-bar div:nth-child(2) {
+            background: white;
+            flex: 1;
+            border-left: 1px solid #eee;
+            border-right: 1px solid #eee;
+        }
+        
+        .tricolor-bar div:nth-child(3) {
+            background: #0038A8;
+            flex: 1;
+        }
+        
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+        
+        /* HEADER */
+        .header {
+            background: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 51, 102, 0.08);
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: #003366;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.2);
+        }
+        
+        .title-section h1 {
+            color: #003366;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .title-section p {
+            color: #D52B1E;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        
+        .contact-info {
+            text-align: right;
+        }
+        
+        .contact-info p:first-child {
+            color: #666;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .contact-info p:last-child {
+            color: #003366;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        /* PANELES DE RECUPERACIÓN */
+        .recovery-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .recovery-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .recovery-card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 51, 102, 0.1);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .recovery-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #D52B1E, #0038A8);
+        }
+        
+        .card-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .card-header h2 {
+            color: #003366;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .card-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* FORMULARIOS */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #003366;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-left: 5px;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        
+        .input-with-icon select,
+        .input-with-icon input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #f8fafc;
+            transition: all 0.3s;
+        }
+        
+        .input-with-icon select:focus,
+        .input-with-icon input:focus {
+            outline: none;
+            border-color: #003366;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+        }
+        
+        /* BOTONES */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 40px;
+        }
+        
+        .btn-primary {
+            background: #003366;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary:hover {
+            background: #002244;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 51, 102, 0.2);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #003366;
+            border: 2px solid #003366;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+        
+        /* MENSAJE DE ÉXITO */
+        .success-message {
+            text-align: center;
+            padding: 30px;
+            background: #f0f9ff;
+            border-radius: 20px;
+            border-left: 5px solid #10b981;
+        }
+        
+        .success-message h3 {
+            color: #003366;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .success-message p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        /* PANTALLA DE INICIO */
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 20px 40px rgba(0, 51, 102, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-header h2 {
+            color: #003366;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #666;
+        }
+        
+        /* DIVISOR */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+        
+        .divider span {
+            padding: 0 15px;
+        }
+        
+        /* OPCIONES EXTRAS */
+        .extra-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .extra-btn {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            font-weight: 600;
+            color: #003366;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .extra-btn:hover {
+            background: #f8fafc;
+            border-color: #003366;
+        }
+        
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .footer p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- BANDA TRICOLOR -->
+    <div class="tricolor-bar">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    
+    <div class="container">
+        <!-- ENCABEZADO -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">MRE</div>
+                <div class="title-section">
+                    <h1>Ministerio de Relaciones Exteriores</h1>
+                    <p>REPÚBLICA DEL PARAGUAY</p>
+                </div>
+            </div>
+            <div class="contact-info">
+                <p>ATENCIÓN AL CIUDADANO</p>
+                <p>+595 21 414 8000</p>
+            </div>
+        </div>
+        
+        <!-- CONTENIDO PRINCIPAL -->
+        <div id="content">
+            <!-- Esta es la pantalla de recuperación que pediste -->
+            <div class="recovery-container">
+                <!-- COLUMNA IZQUIERDA: RECUPERAR USUARIO -->
+                <div class="recovery-card">
+                    <div class="card-header">
+                        <h2>Recuperar usuario</h2>
+                        <p>Complete los datos para validar su identidad.</p>
+                    </div>
+                    
+                    <form id="recoveryUserForm">
+                        <div class="form-group">
+                            <label for="documentType">Tipo de documento *</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-id-card"></i>
+                                <select id="documentType" required>
+                                    <option value="">Seleccione tipo</option>
+                                    <option value="CI">Cédula de Identidad</option>
+                                    <option value="DNI">DNI Extranjero</option>
+                                    <option value="PAS">Pasaporte</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="documentNumber">Número de documento *</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-hashtag"></i>
+                                <input type="text" id="documentNumber" placeholder="Ej: 1.234.567" required>
+                            </div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                                VALIDAR Y ENVIAR
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="showLogin()">
+                                <i class="fas fa-arrow-left"></i>
+                                VOLVER AL ACCESO
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Mensaje de éxito (oculto inicialmente) -->
+                    <div id="userSuccessMessage" class="success-message" style="display: none;">
+                        <h3>Instrucciones enviadas</h3>
+                        <p>Si los datos coinciden, hemos enviado su nombre de usuario al correo vinculado a su documento.</p>
+                        <button class="btn-primary" onclick="showLogin()">
+                            <i class="fas fa-check"></i>
+                            ENTENDIDO
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- COLUMNA DERECHA: RECUPERAR CONTRASEÑA -->
+                <div class="recovery-card">
+                    <div class="card-header">
+                        <h2>Recuperar contraseña</h2>
+                        <p>Ingrese su correo para recibir un enlace de recuperación.</p>
+                    </div>
+                    
+                    <form id="recoveryPasswordForm">
+                        <div class="form-group">
+                            <label for="email">Correo electrónico *</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="email" placeholder="usuario@correo.com" required>
+                            </div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-key"></i>
+                                RESTABLECER ACCESO
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="showLogin()">
+                                <i class="fas fa-arrow-left"></i>
+                                VOLVER AL ACCESO
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Mensaje de éxito (oculto inicialmente) -->
+                    <div id="passwordSuccessMessage" class="success-message" style="display: none;">
+                        <h3>Correo enviado</h3>
+                        <p>Hemos enviado un enlace seguro a su casilla de correo para que pueda generar una nueva contraseña.</p>
+                        <button class="btn-primary" onclick="showLogin()">
+                            <i class="fas fa-check"></i>
+                            VOLVER AL INICIO
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Ministerio de Relaciones Exteriores - República del Paraguay</p>
+            <p>© 2024 - Todos los derechos reservados</p>
+        </div>
+    </div>
 
-njh
+    <script>
+        // Funciones para manejar los formularios
+        document.getElementById('recoveryUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Mostrar estado de carga
+            const submitBtn = this.querySelector('.btn-primary');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VALIDANDO...';
+            submitBtn.disabled = true;
+            
+            // Simular envío después de 1.5 segundos
+            setTimeout(() => {
+                // Ocultar formulario y mostrar mensaje de éxito
+                this.style.display = 'none';
+                document.getElementById('userSuccessMessage').style.display = 'block';
+            }, 1500);
+        });
+        
+        document.getElementById('recoveryPasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Mostrar estado de carga
+            const submitBtn = this.querySelector('.btn-primary');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ENVIANDO...';
+            submitBtn.disabled = true;
+            
+            // Simular envío después de 1.5 segundos
+            setTimeout(() => {
+                // Ocultar formulario y mostrar mensaje de éxito
+                this.style.display = 'none';
+                document.getElementById('passwordSuccessMessage').style.display = 'block';
+            }, 1500);
+        });
+        
+        // Función para cambiar a pantalla de login (simulación)
+        function showLogin() {
+            alert('Esta función llevaría a la pantalla de inicio de sesión');
+            // En una implementación real, aquí cambiarías el contenido
+        }
+    </script>
+</body>
+</html>
