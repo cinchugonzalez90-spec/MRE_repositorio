@@ -79,8 +79,10 @@
 
         /* Grilla Tabla */
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.65rem; font-weight: 800; color: #94A3B8; text-transform: uppercase; padding: 1.2rem 1rem; border-bottom: 2px solid #f1f5f9; }
+        .mre-table th { font-size: 0.65rem; font-weight: 800; color: #94A3B8; text-transform: uppercase; padding: 1.2rem 1rem; border-bottom: 2px solid #f1f5f9; text-align: left; }
         .mre-table td { padding: 1.2rem 1rem; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #f1f5f9; }
+        .link-download { color: var(--mre-blue); text-decoration: none; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+        .link-download:hover { color: var(--mre-red); }
 
         /* Estilos Perfil */
         .profile-container { max-width: 800px; margin: 0 auto; background: white; border-radius: 28px; padding: 3rem; box-shadow: 0 10px 40px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
@@ -100,7 +102,6 @@
 
     <!-- SECCIÓN DE AUTENTICACIÓN (BLOQUEADO - NO MODIFICAR) -->
     <section id="authSection">
-        <!-- MODAL AYUDA DOCUMENTO -->
         <div class="mre-modal-overlay" id="helpModal">
             <div class="mre-modal text-center">
                 <button class="btn-close position-absolute top-0 end-0 m-4" onclick="closeHelp()"></button>
@@ -119,7 +120,6 @@
             </div>
         </div>
 
-        <!-- PANTALLA LOGIN -->
         <div class="auth-card text-center" id="loginScreen">
             <div class="tricolor-line"></div>
             <div class="logo-section">
@@ -277,6 +277,16 @@
 
         <!-- Dashboard Panel -->
         <div id="dashboardContent">
+            <!-- BLOQUE DE BIENVENIDA SOLICITADO -->
+            <div class="mb-5">
+                <h1 class="fw-black text-navy uppercase tracking-tighter mb-1" style="color: var(--mre-blue); font-size: 2rem;">
+                    Hola, <span style="color: var(--mre-blue-light);" id="welcomeUserName">JUAN ROMÁN PEREZ</span>
+                </h1>
+                <p class="text-muted small fw-bold text-uppercase tracking-widest" style="font-size: 0.7rem;">
+                    Bienvenido al Sistema de Apostilla Electrónica. Aquí podrá gestionar sus trámites y descargar sus documentos apostillados.
+                </p>
+            </div>
+
             <button class="btn-new-apostilla"><i data-lucide="plus-circle" size="18" class="me-2"></i> Nueva Apostilla</button>
             <div class="status-panel">
                 <div class="status-btn active" onclick="filterBy('Análisis')"><div class="d-flex align-items-center"><i data-lucide="clock" size="24"></i><span class="status-label">Análisis</span></div><span class="status-count">3</span></div>
@@ -284,6 +294,7 @@
                 <div class="status-btn" onclick="filterBy('Devuelto')"><div class="d-flex align-items-center"><i data-lucide="rotate-ccw" size="24"></i><span class="status-label">Devuelto</span></div><span class="status-count">1</span></div>
                 <div class="status-btn" onclick="filterBy('Apostillas')"><div class="d-flex align-items-center"><i data-lucide="file-badge" size="24"></i><span class="status-label">Apostillas</span></div><span class="status-count">45</span></div>
             </div>
+
             <div class="grid-frame">
                 <div class="grid-header">
                     <div><h2 class="grid-title" id="gridTitle">Solicitudes en Análisis</h2><span class="text-muted small fw-bold text-uppercase" style="font-size: 0.6rem; letter-spacing: 2px;">Trámites registrados recientemente</span></div>
@@ -291,10 +302,17 @@
                 </div>
                 <div class="table-responsive">
                     <table class="mre-table">
-                        <thead><tr><th>ID</th><th>Documento</th><th>Estado</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Código de solicitud</th>
+                                <th>Tipo de documento</th>
+                                <th>Estado</th>
+                                <th>Fecha de creación</th>
+                                <th>Descargar</th>
+                            </tr>
+                        </thead>
                         <tbody id="tableBody">
-                            <tr><td>#AP-2025-001</td><td>Certificado de Nacimiento</td><td><span class="badge bg-primary-subtle text-primary border rounded-pill px-3 py-1 fw-bold text-uppercase" style="font-size: 0.6rem;">Análisis</span></td></tr>
-                            <tr><td>#AP-2025-042</td><td>Título Universitario</td><td><span class="badge bg-primary-subtle text-primary border rounded-pill px-3 py-1 fw-bold text-uppercase" style="font-size: 0.6rem;">Análisis</span></td></tr>
+                            <!-- Inyección vía JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -321,6 +339,16 @@
     <script>
         lucide.createIcons();
 
+        // --- DATOS MOCK ACTUALIZADOS ---
+        const solicitudesData = [
+            { codigo: '20250001', tipo: 'Certificado de Nacimiento', estado: 'Análisis', fecha: '12/12/2025 08:45', link: '#' },
+            { codigo: '20250042', tipo: 'Título Universitario', estado: 'Análisis', fecha: '14/12/2025 10:15', link: '#' },
+            { codigo: '20250055', tipo: 'Certificado de Antecedentes', estado: 'Análisis', fecha: '15/12/2025 09:30', link: '#' },
+            { codigo: '20250010', tipo: 'Acta de Matrimonio', estado: 'Aprobados', fecha: '10/12/2025 11:20', link: '#' },
+            { codigo: '20240988', tipo: 'Poder Especial', estado: 'Apostillas', fecha: '20/11/2024 15:45', link: '#' },
+            { codigo: '20240850', tipo: 'Título de Grado', estado: 'Devuelto', fecha: '05/11/2024 12:00', link: '#' }
+        ];
+
         // --- LÓGICA PORTAL (MENU Y VISTAS) ---
         const dropdownToggle = document.getElementById('dropdownToggle');
         const userMenu = document.getElementById('userMenu');
@@ -346,6 +374,7 @@
         function showDashboard() { 
             document.getElementById('profileContent').classList.add('hidden'); 
             document.getElementById('dashboardContent').classList.remove('hidden'); 
+            renderTable('Análisis');
             lucide.createIcons(); 
         }
 
@@ -441,19 +470,64 @@
         function openHelp() { document.getElementById('helpModal').style.display = 'flex'; lucide.createIcons(); }
         function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
 
-        // --- GRILLA ---
+        // --- GRILLA ACTUALIZADA ---
         function filterBy(estado) {
             document.getElementById('gridTitle').innerText = `Solicitudes en ${estado}`;
             document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            const btns = document.querySelectorAll('.status-btn');
+            btns.forEach(btn => {
+                if(btn.innerText.includes(estado)) btn.classList.add('active');
+            });
+            renderTable(estado);
+        }
+
+        function renderTable(estado) {
+            const tableBody = document.getElementById('tableBody');
+            const filtered = solicitudesData.filter(s => s.estado === estado || (estado === 'Apostillas' && s.estado === 'Apostillas'));
+            
+            tableBody.innerHTML = filtered.map(row => `
+                <tr>
+                    <td class="fw-black text-navy" style="font-family: monospace; letter-spacing: 1px;">#${row.codigo}</td>
+                    <td>${row.tipo}</td>
+                    <td>
+                        <span class="badge ${getStatusClass(row.estado)} rounded-pill px-3 py-1 fw-bold text-uppercase" style="font-size: 0.6rem;">
+                            ${row.estado}
+                        </span>
+                    </td>
+                    <td class="text-muted small fw-bold">${row.fecha}</td>
+                    <td>
+                        <a href="${row.link}" class="link-download">
+                            <i data-lucide="download" size="14"></i> PDF
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+
+            if(filtered.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-5 text-muted fw-bold">No hay registros para mostrar en esta categoría.</td></tr>';
+            }
+            
+            lucide.createIcons();
+        }
+
+        function getStatusClass(estado) {
+            if (estado === 'Análisis') return 'bg-primary-subtle text-primary border';
+            if (estado === 'Aprobados') return 'bg-success-subtle text-success border';
+            if (estado === 'Devuelto') return 'bg-warning-subtle text-warning border';
+            return 'bg-dark-subtle text-dark border';
         }
 
         function searchTable(input) {
             const filter = input.value.toUpperCase();
             const tr = document.getElementById('tableBody').getElementsByTagName('tr');
             for (let i = 0; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName('td')[1];
-                if (td) { const txt = td.textContent || td.innerText; tr[i].style.display = txt.toUpperCase().indexOf(filter) > -1 ? "" : "none"; }
+                const td0 = tr[i].getElementsByTagName('td')[0];
+                const td1 = tr[i].getElementsByTagName('td')[1];
+                if (td0 || td1) { 
+                    const txt0 = td0.textContent || td0.innerText; 
+                    const txt1 = td1.textContent || td1.innerText; 
+                    tr[i].style.display = (txt0.toUpperCase().indexOf(filter) > -1 || txt1.toUpperCase().indexOf(filter) > -1) ? "" : "none"; 
+                }
             }
         }
     </script>
