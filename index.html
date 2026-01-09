@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Neon Fintech Prototipo</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,6 +22,14 @@
             --radius-md: 16px;
             --radius-sm: 12px;
             --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            
+            /* Variables para anchos responsivos */
+            --card-width-home: 85vw;
+            --max-card-width: 340px;
+            
+            /* Checkout específico - REDUCIDO para visualización completa */
+            --card-width-checkout: 65vw; 
+            --max-card-width-checkout: 240px;
         }
 
         * {
@@ -34,25 +42,38 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000;
+            background-color: #000; /* Fondo negro fuera de la app */
             color: var(--text-main);
             height: 100vh;
+            width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
-        /* Contenedor principal que simula el móvil */
+        /* Contenedor principal responsive */
         #app-container {
             width: 100%;
             height: 100%;
-            max-width: 414px; /* iPhone Max width */
-            max-height: 896px;
+            /* En escritorio simulamos móvil, en móvil llenamos pantalla */
+            max-width: 480px; 
+            max-height: 100vh;
             background-color: var(--bg-color);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0, 230, 118, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 481px) {
+            #app-container {
+                height: 90vh;
+                max-height: 896px;
+                border-radius: 40px;
+                box-shadow: 0 0 50px rgba(0, 230, 118, 0.15);
+                border: 8px solid #1a1a1a;
+            }
         }
 
         /* --- Estilos Generales de Pantallas --- */
@@ -64,7 +85,9 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 24px; /* Margen estándar para todo */
+            padding: 24px;
+            padding-top: env(safe-area-inset-top, 24px); /* Soporte Notch */
+            padding-bottom: env(safe-area-inset-bottom, 24px);
             opacity: 0;
             pointer-events: none;
             transform: scale(0.95);
@@ -80,15 +103,17 @@
             z-index: 10;
         }
 
-        /* ESTILO ESPECÍFICO PARA CHECKOUT (Layout Fijo + Scroll) */
+        /* ESTILO ESPECÍFICO PARA CHECKOUT */
         #screen-checkout {
-            padding: 0; /* Quitamos padding del contenedor principal para manejarlo internamente */
+            padding: 0; 
         }
 
         .checkout-scroll-area {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 24px;
+            padding-top: env(safe-area-inset-top, 24px);
             padding-bottom: 20px;
             display: flex;
             flex-direction: column;
@@ -96,8 +121,9 @@
         }
 
         .checkout-fixed-footer {
-            padding: 0 24px 30px 24px; /* Padding lateral y bottom seguro */
-            background: linear-gradient(to top, var(--bg-color) 80%, transparent);
+            padding: 0 24px 30px 24px;
+            padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+            background: linear-gradient(to top, var(--bg-color) 85%, transparent);
             width: 100%;
             flex-shrink: 0;
             z-index: 20;
@@ -113,19 +139,8 @@
             padding-top: 10px;
         }
         
-        .menu-icon {
-            font-size: 1.4rem;
-            color: var(--text-main);
-            cursor: pointer;
-        }
-
-        .system-name {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--text-main);
-            text-transform: uppercase;
-        }
+        .menu-icon { font-size: 1.4rem; color: var(--text-main); cursor: pointer; }
+        .system-name { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: var(--text-main); text-transform: uppercase; }
 
         .notif-wrapper {
             position: relative;
@@ -136,26 +151,13 @@
             align-items: center;
             justify-content: center;
         }
-
-        .notif-icon {
-            font-size: 1.4rem;
-            color: var(--text-main);
-        }
-
+        .notif-icon { font-size: 1.4rem; color: var(--text-main); }
         .notif-badge {
-            position: absolute;
-            top: -2px;
-            right: 0;
-            background-color: var(--danger-color);
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 800;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; top: -2px; right: 0;
+            background-color: var(--danger-color); color: white;
+            font-size: 0.65rem; font-weight: 800;
+            width: 16px; height: 16px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
             border: 2px solid var(--bg-color);
             animation: bounce 2s infinite;
         }
@@ -166,148 +168,87 @@
             60% {transform: translateY(-1.5px);}
         }
 
-        /* --- Header (Saludo Usuario) --- */
+        /* --- Header --- */
         .header {
-            display: flex;
-            flex-direction: column; 
-            justify-content: flex-start;
-            margin-bottom: 25px; /* Espacio limpio antes del balance */
-            width: 100%;
+            display: flex; flex-direction: column; justify-content: flex-start;
+            margin-bottom: 25px; width: 100%;
         }
-
-        .header-top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            margin-bottom: 12px;
-        }
-
-        /* TEXTOS DE ENCABEZADO */
-        .user-info h2 { 
-            font-size: 2.4rem; 
-            font-weight: 700; 
-            letter-spacing: -1px; 
-            line-height: 1.1;
-            color: var(--text-main);
-        }
-        .user-info p.greeting { 
-            font-size: 1.2rem; 
-            color: var(--text-secondary); 
-            margin-bottom: 2px; 
-        }
-        
-        .welcome-msg {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            max-width: 100%;
-            /* Alineado estrictamente a la izquierda */
-            text-align: left; 
-        }
-
+        .header-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 12px; }
+        .user-info h2 { font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 700; letter-spacing: -1px; line-height: 1.1; }
+        .user-info p.greeting { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 2px; }
+        .welcome-msg { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; max-width: 100%; text-align: left; }
         .avatar { width: 50px; height: 50px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary-color); font-size: 1.2rem; }
 
-        /* --- Dashboard (Pantalla 1) --- */
+        /* --- Dashboard --- */
         .dashboard-main-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; 
-            flex: 1; 
-            padding-bottom: 100px;
+            display: flex; flex-direction: column; justify-content: flex-start; flex: 1; padding-bottom: 100px;
         }
-
-        .balance-section { 
-            margin-bottom: 24px; 
-            width: 100%;
-            display: flex;
-            /* CENTRADO para alinear con las tarjetas */
-            justify-content: center; 
-        }
-
-        /* Recuadro de Balance */
+        .balance-section { margin-bottom: 24px; width: 100%; display: flex; justify-content: center; }
+        
         .balance-display-card {
-            width: 100%;
-            /* RESTAURADO ancho máximo para que coincida con la tarjeta */
-            max-width: 320px; 
+            width: var(--card-width-home); max-width: var(--max-card-width);
             background: linear-gradient(135deg, #2a2d35 0%, #15171b 100%);
-            border-radius: var(--radius-lg);
-            padding: 24px; /* Padding interno consistente */
+            border-radius: var(--radius-lg); padding: 24px;
             border: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            display: flex; flex-direction: column; align-items: flex-start;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-
         .balance-label { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 8px;}
-        
-        .balance-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .balance-amount { font-size: 2.2rem; font-weight: 700; color: var(--text-main); line-height: 1; }
+        .balance-row { display: flex; align-items: center; gap: 12px; }
+        .balance-amount { font-size: clamp(1.8rem, 6vw, 2.2rem); font-weight: 700; color: var(--text-main); line-height: 1; }
         .balance-amount span { color: var(--primary-color); font-size: 0.8em; vertical-align: top; margin-right: 2px; }
+        .balance-card-icon { color: var(--primary-color); font-size: 1.5rem; opacity: 0.9; }
 
-        .balance-card-icon {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            opacity: 0.9;
-        }
-
-        /* Carrusel de Tarjetas */
+        /* Carrusel de Tarjetas (Responsive) */
         .cards-carousel {
             display: flex;
             overflow-x: auto;
-            gap: 20px; 
+            gap: 20px;
             padding: 20px 0;
             margin-bottom: 0;
-            
-            /* Ajuste de márgenes para permitir scroll completo */
-            margin-left: -24px;
-            margin-right: -24px;
-            padding-left: 24px;
-            padding-right: 24px;
-
+            /* Romper márgenes del contenedor padre para scroll completo */
+            margin-left: -24px; margin-right: -24px;
+            padding-left: 24px; padding-right: 24px;
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
             align-items: center;
             cursor: grab;
         }
         
-        .cards-carousel.grabbing {
-            cursor: grabbing;
-            scroll-snap-type: none;
-            scroll-behavior: auto;
-        }
+        .cards-carousel.grabbing { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
         
-        /* Espaciadores para centrar perfectamente la tarjeta */
-        .cards-carousel::before,
-        .cards-carousel::after {
-            content: '';
-            display: block;
-            min-width: calc(50% - 160px); 
+        /* Espaciadores Dinámicos para Centrado */
+        .cards-carousel::before, .cards-carousel::after {
+            content: ''; display: block; flex-shrink: 0;
+            /* Calcula el espacio para centrar: (Ancho Pantalla - Ancho Tarjeta) / 2 - Padding Container */
+            min-width: calc((100vw - var(--card-width-home)) / 2 - 24px);
+        }
+        /* Ajuste para pantallas grandes donde aplica max-width */
+        @media (min-width: 400px) {
+             .cards-carousel::before, .cards-carousel::after {
+                min-width: calc((100vw - var(--max-card-width)) / 2 - 24px);
+             }
+        }
+        @media (min-width: 480px) {
+             .cards-carousel::before, .cards-carousel::after {
+                /* Si el contenedor tiene tope de 480px */
+                min-width: calc((480px - var(--max-card-width)) / 2 - 24px);
+             }
         }
 
         .cards-carousel::-webkit-scrollbar { display: none; }
 
         .credit-card {
-            min-width: 320px; 
+            width: var(--card-width-home);
+            max-width: var(--max-card-width);
             height: 200px;
             background: linear-gradient(135deg, #2a2d35 0%, #15171b 100%);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            position: relative;
-            scroll-snap-align: center; /* Centrar al hacer snap */
+            border-radius: var(--radius-lg); padding: 24px;
+            position: relative; scroll-snap-align: center;
             border: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            display: flex; flex-direction: column; justify-content: space-between;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             flex-shrink: 0;
         }
         
@@ -315,398 +256,267 @@
             background: linear-gradient(135deg, var(--surface-color) 0%, #000 100%);
             border: 1px solid var(--primary-color);
             box-shadow: 0 15px 30px -5px rgba(0, 230, 118, 0.25);
-            transform: scale(1.02); 
-            z-index: 2;
+            transform: scale(1.02); z-index: 2;
         }
 
         .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
         .chip { width: 45px; height: 32px; background: #cb9b28; border-radius: 6px; opacity: 0.8; }
         .card-logo { font-size: 2rem; color: white; }
-        .card-number { letter-spacing: 3px; font-size: 1.3rem; margin-top: 10px; }
+        .card-number { letter-spacing: 3px; font-size: clamp(1rem, 4vw, 1.3rem); margin-top: 10px; }
         .card-holder { font-size: 0.9rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px;}
 
-        /* ESTILOS PARA CHECKOUT CAROUSEL */
+        /* CHECKOUT CAROUSEL (PROTAGONISTA - COMPACTO PARA VISUALIZACIÓN COMPLETA) */
+        #checkout-carousel { 
+            padding: 10px 0 40px 0; /* Padding inferior reducido para ganar espacio */
+        }
         
-        /* Redefinimos los espaciadores SOLO para el carrusel de checkout */
-        #checkout-carousel {
-            padding: 10px 0 20px 0; /* Más espacio vertical para que no se corte */
-        }
-
-        #checkout-carousel::before,
-        #checkout-carousel::after {
-            min-width: calc(50% - 130px); /* 130px es la mitad de 260px (nuevo ancho) */
-        }
-
         #checkout-carousel .card-wrapper-item {
-            min-width: 260px; /* Reducido de 320px */
+            width: var(--card-width-checkout);
+            max-width: var(--max-card-width-checkout);
             scroll-snap-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; flex-direction: column; align-items: center;
+            flex-shrink: 0;
+            overflow: visible; /* CRÍTICO: Permitir que sombras y etiquetas salgan del contenedor */
+        }
+
+        #checkout-carousel::before, #checkout-carousel::after {
+            min-width: calc((100vw - var(--card-width-checkout)) / 2 - 24px);
+        }
+        
+        /* Ajustes responsivos para espaciadores */
+        @media (min-width: 370px) {
+             #checkout-carousel::before, #checkout-carousel::after {
+                min-width: calc((100vw - var(--max-card-width-checkout)) / 2 - 24px);
+             }
+        }
+        @media (min-width: 480px) {
+             #checkout-carousel::before, #checkout-carousel::after {
+                min-width: calc((480px - var(--max-card-width-checkout)) / 2 - 24px);
+             }
         }
 
         #checkout-carousel .credit-card {
-            min-width: 260px; /* Reducido */
-            height: 160px;    /* Reducido de 200px */
-            padding: 18px;    /* Padding reducido */
-        }
-
-        /* Ajustes de fuente para las tarjetas pequeñas */
-        #checkout-carousel .card-logo { font-size: 1.6rem; }
-        #checkout-carousel .card-number { font-size: 1rem; letter-spacing: 2px; }
-        #checkout-carousel .card-holder { font-size: 0.8rem; }
-        #checkout-carousel .chip { width: 35px; height: 26px; }
-
-        .discount-label {
-            margin-top: 8px;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .card-wrapper-item.active .discount-label {
-            color: var(--primary-color);
-            border-color: rgba(0, 230, 118, 0.3);
-            background: rgba(0, 230, 118, 0.05);
-            box-shadow: 0 0 15px rgba(0, 230, 118, 0.1);
-            transform: translateY(2px);
-        }
-
-        /* --- NUEVO: SECCIÓN DE OFERTA DE TARJETAS (UPSELL) --- */
-        .upsell-section {
-            margin-top: 15px;
-            margin-bottom: 20px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* Espacio entre tarjetas de oferta */
-        }
-
-        .upsell-title {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+            width: 100%; max-width: none;
+            aspect-ratio: 1.586; /* Ratio exacto tarjeta crédito */
+            height: auto;
+            padding: 16px; /* Padding reducido para tarjetas pequeñas */
+            box-sizing: border-box;
             margin-bottom: 5px;
-            padding-left: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
+        }
+        
+        /* Ajustar fuentes para tarjeta más pequeña */
+        #checkout-carousel .card-logo { font-size: 1.4rem; }
+        #checkout-carousel .card-number { font-size: 0.85rem; letter-spacing: 1.5px; margin-top: 5px; }
+        #checkout-carousel .card-holder { font-size: 0.75rem; }
+        #checkout-carousel .chip { width: 32px; height: 24px; }
+        
+        /* Estilos llamativos para la etiqueta de descuento */
+        .discount-label {
+            margin-top: 10px; 
+            color: var(--text-secondary); font-size: 0.9rem;
+            font-weight: 500; letter-spacing: 0.5px; padding: 6px 16px;
+            border-radius: 24px; border: 1px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            opacity: 0.7;
+        }
+        .card-wrapper-item.active .discount-label {
+            color: #000;
+            background: var(--primary-color); 
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3);
+            transform: scale(1.05); 
+            font-weight: 700;
+            opacity: 1;
         }
 
-        .upsell-card {
+        /* --- BIG TOTAL DISPLAY --- */
+        .big-total-section {
+            text-align: center;
+            margin-top: 5px; /* Reducido para ganar espacio */
+            margin-bottom: 20px; /* Reducido para ganar espacio */
+        }
+        .big-total-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .big-total-amount {
+            font-size: 2rem; /* REDUCIDO de 2.8rem */
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+        }
+        .big-total-old {
+            font-size: 1rem;
+            text-decoration: line-through;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 4px;
+            opacity: 0.6;
+        }
+
+        .payment-details { 
+            background: var(--surface-color); padding: 15px 20px; border-radius: var(--radius-md); 
+            margin-bottom: auto; margin-top: 0;
+        }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
+        .label { color: var(--text-secondary); }
+
+        /* Upsell Section (Minimalist List) */
+        .upsell-section {
+            margin-top: 10px; margin-bottom: 20px; width: 100%;
+            display: flex; flex-direction: column;
+        }
+        .upsell-title {
+            font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;
+            padding-left: 5px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+        }
+        
+        /* Estilo lista limpia sin recuadros (PARA SELECCIÓN TARJETA) */
+        .upsell-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .upsell-item:last-child { border-bottom: none; }
+
+        /* Estilo CON RECUADRO para Recibo */
+        .receipt-upsell-card {
             background: linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 100%);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-md);
-            padding: 15px;
+            padding: 16px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* Estilo Específico Tarjeta 1 (Mejor descuento - Platinum/Infinite) */
-        .upsell-card.tier-1 {
-            border: 1px solid rgba(0, 230, 118, 0.4); /* Verde neón sutil */
-        }
-        .upsell-card.tier-1::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
+        .receipt-upsell-card.tier-1 { border: 1px solid rgba(0, 230, 118, 0.3); }
+        .receipt-upsell-card.tier-1::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
             background: var(--primary-color);
         }
-        .upsell-card.tier-1 .upsell-discount { color: var(--primary-color); }
-        .upsell-card.tier-1 .btn-apply {
-            color: var(--primary-color);
-            border-color: rgba(0, 230, 118, 0.5);
-            background: rgba(0, 230, 118, 0.1);
-        }
 
-        /* Estilo Específico Tarjeta 2 (Segundo mejor - Gold/Black) */
-        .upsell-card.tier-2 {
-            border: 1px solid rgba(255, 215, 0, 0.3); /* Gold border hint */
-        }
-        .upsell-card.tier-2::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
+        .receipt-upsell-card.tier-2 { border: 1px solid rgba(255, 215, 0, 0.3); }
+        .receipt-upsell-card.tier-2::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
             background: #ffd700;
         }
-        .upsell-card.tier-2 .upsell-discount { color: #ffd700; }
-        .upsell-card.tier-2 .btn-apply {
-            color: #ffd700;
-            border-color: rgba(255, 215, 0, 0.5);
-            background: rgba(255, 215, 0, 0.1);
-        }
 
-        .upsell-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+        .upsell-content {
+            display: flex; align-items: center; gap: 12px;
         }
-
-        .upsell-name {
-            color: white;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
+        .upsell-icon {
+            width: 32px; height: 32px; background: rgba(255,255,255,0.1);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; color: white;
         }
+        .upsell-text h4 { font-size: 0.95rem; font-weight: 600; color: white; margin-bottom: 2px;}
+        .upsell-text p { font-size: 0.8rem; color: var(--primary-color); font-weight: 500;}
+        .upsell-savings-small { font-size: 0.75rem; color: var(--text-secondary); margin-left: 4px;}
 
-        .upsell-discount {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .upsell-savings {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .btn-apply {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
+        .btn-small-link {
+            font-size: 0.85rem; color: var(--text-main); text-decoration: none;
+            font-weight: 600; padding: 6px 12px;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 12px;
             transition: all 0.2s;
             background: transparent;
-            border: 1px solid;
         }
-        
-        .btn-apply:active {
-            transform: scale(0.95);
-        }
+        .btn-small-link:active { background: rgba(255,255,255,0.1); }
+
 
         /* Botón Flotante Scan */
         .fab-scan {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 96px;
-            height: 96px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            box-shadow: 0 0 30px rgba(0, 230, 118, 0.6);
-            cursor: pointer;
-            border: 4px solid rgba(255,255,255,0.1);
-            transition: transform 0.2s;
-            z-index: 20;
-            animation: pulse-glow 2s infinite;
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            width: 96px; height: 96px; border-radius: 50%;
+            background: var(--primary-color); color: #000;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; box-shadow: 0 0 30px rgba(0, 230, 118, 0.6);
+            cursor: pointer; border: 4px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s; z-index: 20; animation: pulse-glow 2s infinite;
         }
-        
         .fab-scan:active { transform: translateX(-50%) scale(0.95); }
-
         @keyframes pulse-glow {
             0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
             70% { box-shadow: 0 0 0 20px rgba(0, 230, 118, 0); }
             100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
         }
-
         .scan-label {
-            position: absolute;
-            bottom: -35px;
-            width: 120px;
-            text-align: center;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            left: 50%;
-            transform: translateX(-50%);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+            position: absolute; bottom: -35px; width: 120px; text-align: center;
+            font-size: 1rem; font-weight: 700; color: var(--primary-color); left: 50%; transform: translateX(-50%);
+            text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
         }
 
-        /* --- Escáner QR (Pantalla 2) --- */
+        /* --- Escáner QR --- */
         #screen-scanner { padding: 0; background: #000; }
-        .scanner-header {
-            position: absolute; top: 0; width: 100%; padding: 40px 24px; z-index: 10;
-            display: flex; justify-content: space-between;
-        }
+        .scanner-header { position: absolute; top: 0; width: 100%; padding: 40px 24px; z-index: 10; display: flex; justify-content: space-between; }
         .back-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-
-        .camera-viewport {
-            width: 100%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&q=80&w=1000') center/cover no-repeat;
-            position: relative;
-        }
-        .camera-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        
-        .scan-frame {
-            width: 280px; height: 280px;
-            position: relative;
-        }
-        /* Esquinas del marco */
-        .corner {
-            position: absolute; width: 40px; height: 40px; border: 4px solid var(--primary-color);
-        }
+        .camera-viewport { width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&q=80&w=1000') center/cover no-repeat; position: relative; }
+        .camera-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .scan-frame { width: 280px; height: 280px; position: relative; }
+        .corner { position: absolute; width: 40px; height: 40px; border: 4px solid var(--primary-color); }
         .tl { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 12px 0 0 0; }
         .tr { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 12px 0 0; }
         .bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 12px; }
         .br { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 12px 0; }
-
-        .scan-line {
-            width: 100%; height: 2px; background: var(--primary-color);
-            box-shadow: 0 0 10px var(--primary-color);
-            position: absolute; top: 10px;
-            animation: scanAnim 2s infinite ease-in-out;
-        }
-
-        @keyframes scanAnim {
-            0% { top: 10px; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 270px; opacity: 0; }
-        }
-
+        .scan-line { width: 100%; height: 2px; background: var(--primary-color); box-shadow: 0 0 10px var(--primary-color); position: absolute; top: 10px; animation: scanAnim 2s infinite ease-in-out; }
+        @keyframes scanAnim { 0% { top: 10px; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 270px; opacity: 0; } }
         .scan-text { margin-top: 20px; color: white; text-align: center; font-size: 0.9rem; letter-spacing: 0.5px; }
 
-        /* --- Smart Checkout (Pantalla 3) --- */
-        .merchant-preview {
-            display: flex; flex-direction: column; align-items: center; margin-top: 10px; margin-bottom: 10px;
-        }
-        /* LOGO ELIMINADO - Estilo anterior removido */
-        .amount-display { font-size: 2rem; font-weight: 700; color: var(--text-main); margin: 5px 0; }
-        
-        /* Estilos para precio tachado y nuevo precio */
+        /* --- Smart Checkout --- */
+        .merchant-preview { display: flex; flex-direction: column; align-items: center; margin-top: 10px; margin-bottom: 10px; }
         .old-price { font-size: 1rem; text-decoration: line-through; color: var(--text-secondary); margin-right: 8px; opacity: 0.7;}
         .new-price { color: var(--primary-color); }
-
         .currency { font-size: 1rem; color: var(--primary-color); vertical-align: top; margin-right: 2px; }
         
-        .payment-details {
-            background: var(--surface-color); padding: 15px 20px; border-radius: var(--radius-md); margin-bottom: auto; margin-top: 10px;
-        }
-        .detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
-        .detail-row:last-child { margin-bottom: 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; font-weight: 600; font-size: 1rem; }
-        .label { color: var(--text-secondary); }
-
         /* Slider de Pago */
         .slider-container {
-            width: 100%;
-            height: 60px;
-            background: #2a2d35;
-            border-radius: 30px;
-            position: relative;
-            /* Margin bottom movido al footer wrapper */
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%; height: 60px; background: #2a2d35; border-radius: 30px;
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
         }
-        .slider-text {
-            color: rgba(255,255,255,0.5);
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            font-weight: 500;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
+        .slider-text { color: rgba(255,255,255,0.5); font-size: 0.9rem; letter-spacing: 1px; font-weight: 500; pointer-events: none; transition: opacity 0.3s; }
         .slider-thumb {
-            width: 52px; height: 52px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            position: absolute;
-            left: 4px;
-            top: 4px;
-            display: flex; align-items: center; justify-content: center;
-            color: #000;
-            font-size: 1.2rem;
-            cursor: grab;
-            box-shadow: 0 0 15px var(--primary-color);
-            transition: transform 0.1s;
-            z-index: 5;
+            width: 52px; height: 52px; background: var(--primary-color); border-radius: 50%;
+            position: absolute; left: 4px; top: 4px; display: flex; align-items: center; justify-content: center;
+            color: #000; font-size: 1.2rem; cursor: grab; box-shadow: 0 0 15px var(--primary-color);
+            transition: transform 0.1s; z-index: 5;
         }
-        .slider-fill {
-            position: absolute; left: 0; top: 0; height: 100%; width: 0;
-            background: var(--primary-dim);
-            pointer-events: none;
-        }
+        .slider-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: var(--primary-dim); pointer-events: none; }
 
-        /* --- Recibo (Pantalla 4) --- */
-        #screen-receipt {
-            overflow-y: auto; /* Habilitar scroll */
-        }
-        
+        /* --- Recibo --- */
+        #screen-receipt { overflow-y: auto; }
         .receipt-content {
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: flex-start; /* Contenido arriba para scroll */
-            padding-top: 40px;
-            padding-bottom: 40px;
-            min-height: 100%; 
-            text-align: center;
-            width: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding-top: 40px; padding-bottom: 40px; min-height: 100%; text-align: center; width: 100%;
         }
-        
         .success-circle {
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            border: 4px solid var(--primary-color);
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 30px;
-            font-size: 3rem; color: var(--primary-color);
-            box-shadow: 0 0 30px var(--primary-dim);
-            transform: scale(0);
-            flex-shrink: 0;
+            width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary-color);
+            display: flex; align-items: center; justify-content: center; margin-bottom: 30px;
+            font-size: 3rem; color: var(--primary-color); box-shadow: 0 0 30px var(--primary-dim);
+            transform: scale(0); flex-shrink: 0;
         }
-        
         .success-anim { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-        @keyframes popIn {
-            to { transform: scale(1); }
-        }
-
+        @keyframes popIn { to { transform: scale(1); } }
         .receipt-title { font-size: 1.5rem; margin-bottom: 10px; }
         .receipt-subtitle { color: var(--text-secondary); margin-bottom: 40px; }
-        
         .btn-primary {
-            width: 100%;
-            padding: 18px;
-            background: var(--primary-color);
-            color: #000;
-            font-weight: 700;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.1s;
+            width: 100%; padding: 18px; background: var(--primary-color); color: #000;
+            font-weight: 700; border: none; border-radius: var(--radius-md); font-size: 1rem;
+            cursor: pointer; transition: transform 0.1s;
         }
         .btn-primary:active { transform: scale(0.98); }
-
         .btn-secondary {
-            width: 100%;
-            padding: 18px;
-            background: transparent;
-            color: var(--primary-color);
-            font-weight: 700;
-            border: 2px solid var(--primary-color);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            cursor: pointer;
-            margin-bottom: 12px; /* Space between buttons */
-            transition: transform 0.1s;
+            width: 100%; padding: 18px; background: transparent; color: var(--primary-color);
+            font-weight: 700; border: 2px solid var(--primary-color); border-radius: var(--radius-md);
+            font-size: 1rem; cursor: pointer; margin-bottom: 12px; transition: transform 0.1s;
         }
         .btn-secondary:active { transform: scale(0.98); }
 
@@ -839,9 +649,7 @@
             </header>
 
             <div class="merchant-preview">
-                <!-- ICONO ELIMINADO -->
                 <p style="color:var(--text-secondary); font-size:0.9rem;">Pago a Nike Store</p>
-                <div class="amount-display" id="checkout-amount"><span class="currency">₲</span>145.000</div>
             </div>
 
             <!-- Carrusel de Checkout con Tarjetas Más Pequeñas -->
@@ -856,7 +664,7 @@
                         <div class="card-number">**** **** **** 4242</div>
                         <div class="card-holder">Alex Designer</div>
                     </div>
-                    <div class="discount-label">🔥 20% de Descuento</div>
+                    <div class="discount-label">🔥 20% OFF</div>
                 </div>
                 
                 <!-- Opción 2: MC -->
@@ -869,7 +677,7 @@
                         <div class="card-number">**** **** **** 8899</div>
                         <div class="card-holder">Alex Designer</div>
                     </div>
-                    <div class="discount-label">⭐ 10% de Descuento</div>
+                    <div class="discount-label">⭐ 10% OFF</div>
                 </div>
 
                 <!-- Opción 3: Amex -->
@@ -886,44 +694,34 @@
                 </div>
             </div>
 
+            <!-- GRAN BLOQUE DE TOTAL A PAGAR (PROTAGONISTA) -->
+            <div class="big-total-section">
+                <span class="big-total-label">Total a Pagar</span>
+                <span class="big-total-old" id="old-price-display">₲ 145.000</span>
+                <div class="big-total-amount" id="total-display">₲ 116.000</div>
+            </div>
+
             <div class="payment-details">
-                <!-- ID Transaccion Removed -->
                 <div class="detail-row">
                     <span class="label">Descuento Aplicado</span>
                     <span id="discount-display" style="color:var(--primary-color)">- ₲ 29.000 (20%)</span>
                 </div>
-                <div class="detail-row">
-                    <span>Total a Pagar</span>
-                    <span id="total-display">₲ 116.000</span>
-                </div>
             </div>
 
-            <!-- NUEVA SECCIÓN DE OFERTA ORDENADA -->
+            <!-- NUEVA SECCIÓN DE OFERTA MINIMALISTA -->
             <div class="upsell-section">
-                <h4 class="upsell-title">Ahorra más con estas tarjetas</h4>
+                <h4 class="upsell-title">Ahorra más con esta tarjeta</h4>
                 
-                <!-- Tarjeta 1: Neon Infinite (35% - Mejor Descuento) -->
-                <div class="upsell-card tier-1">
-                    <div class="upsell-info">
-                        <div class="upsell-name">
-                            <i class="fab fa-cc-visa" style="color:white;"></i> Neon Infinite
+                <!-- Oferta 1 -->
+                <div class="upsell-item">
+                    <div class="upsell-content">
+                        <div class="upsell-icon"><i class="fab fa-cc-visa"></i></div>
+                        <div class="upsell-text">
+                            <h4>Neon Infinite</h4>
+                            <p>35% OFF <span class="upsell-savings-small">(Ahorra ₲ 50.750)</span></p>
                         </div>
-                        <div class="upsell-discount">35% OFF en Nike</div>
-                        <div class="upsell-savings">Ahorrarías ₲ 50.750</div>
                     </div>
-                    <button class="btn-apply">Solicitar</button>
-                </div>
-
-                <!-- Tarjeta 2: Neon Black (30% - Segundo Mejor) -->
-                <div class="upsell-card tier-2">
-                    <div class="upsell-info">
-                        <div class="upsell-name">
-                            <i class="fab fa-cc-mastercard" style="color:white;"></i> Neon Black
-                        </div>
-                        <div class="upsell-discount">30% OFF en Nike</div>
-                        <div class="upsell-savings">Ahorrarías ₲ 43.500</div>
-                    </div>
-                    <button class="btn-apply">Solicitar</button>
+                    <a href="#" class="btn-small-link">Pedir</a>
                 </div>
             </div>
         </div>
@@ -973,32 +771,30 @@
                 </div>
             </div>
 
-            <!-- NUEVA SECCIÓN DE OFERTA EN RECIBO -->
+            <!-- SECCIÓN OFERTA RECIBO (CON RECUADRO) -->
             <div class="upsell-section" style="text-align: left; margin-bottom: 30px;">
                 <h4 class="upsell-title">Para tu próxima compra</h4>
                 
-                <!-- Tarjeta 1: Neon Infinite (35% - Mejor Descuento) -->
-                <div class="upsell-card tier-1">
-                    <div class="upsell-info">
-                        <div class="upsell-name">
-                            <i class="fab fa-cc-visa" style="color:white;"></i> Neon Infinite
+                <div class="receipt-upsell-card tier-1">
+                    <div class="upsell-content">
+                        <div class="upsell-icon"><i class="fab fa-cc-visa"></i></div>
+                        <div class="upsell-text">
+                            <h4>Neon Infinite</h4>
+                            <p>35% OFF</p>
                         </div>
-                        <div class="upsell-discount">35% OFF en Nike</div>
-                        <div class="upsell-savings">Ahorrarías ₲ 50.750</div>
                     </div>
-                    <button class="btn-apply">Solicitar</button>
+                    <button class="btn-small-link">Pedir</button>
                 </div>
 
-                <!-- Tarjeta 2: Neon Black (30% - Segundo Mejor) -->
-                <div class="upsell-card tier-2">
-                    <div class="upsell-info">
-                        <div class="upsell-name">
-                            <i class="fab fa-cc-mastercard" style="color:white;"></i> Neon Black
+                <div class="receipt-upsell-card tier-2">
+                    <div class="upsell-content">
+                        <div class="upsell-icon"><i class="fab fa-cc-mastercard"></i></div>
+                        <div class="upsell-text">
+                            <h4>Neon Black</h4>
+                            <p>30% OFF</p>
                         </div>
-                        <div class="upsell-discount">30% OFF en Nike</div>
-                        <div class="upsell-savings">Ahorrarías ₲ 43.500</div>
                     </div>
-                    <button class="btn-apply">Solicitar</button>
+                    <button class="btn-small-link">Pedir</button>
                 </div>
             </div>
 
@@ -1091,18 +887,19 @@
         const discountAmount = originalAmount * (percent / 100);
         const finalAmount = originalAmount - discountAmount;
 
-        const amountDisplay = document.getElementById('checkout-amount');
-        const discountDisplay = document.getElementById('discount-display');
         const totalDisplay = document.getElementById('total-display');
+        const oldPriceDisplay = document.getElementById('old-price-display');
+        const discountDisplay = document.getElementById('discount-display');
         
         // Receipt elements
         const receiptTotal = document.getElementById('receipt-total');
         const receiptSavings = document.getElementById('receipt-savings');
         const receiptSavingsRow = document.getElementById('receipt-savings-row');
 
-        // Actualizar UI Checkout
+        // Actualizar UI Checkout (Bloque Protagonista)
         if (percent > 0) {
-            amountDisplay.innerHTML = `<span class="old-price">${formatCurrency(originalAmount)}</span> <span class="new-price">${formatCurrency(finalAmount)}</span>`;
+            oldPriceDisplay.textContent = formatCurrency(originalAmount);
+            oldPriceDisplay.style.display = 'block';
             discountDisplay.textContent = `- ${formatCurrency(discountAmount)} (${percent}%)`;
             discountDisplay.style.color = 'var(--primary-color)';
             
@@ -1110,7 +907,7 @@
             if(receiptSavings) receiptSavings.textContent = formatCurrency(discountAmount);
             if(receiptSavingsRow) receiptSavingsRow.style.display = 'flex';
         } else {
-            amountDisplay.innerHTML = `<span class="currency">₲</span>${originalAmount.toLocaleString('es-PY')}`;
+            oldPriceDisplay.style.display = 'none';
             discountDisplay.textContent = '₲ 0 (0%)';
             discountDisplay.style.color = 'var(--text-secondary)';
             
